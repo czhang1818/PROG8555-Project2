@@ -7,6 +7,7 @@ obj/
 *.dll
 *.pdb
 *.exe
+*.so
 
 ## IDE
 .vs/
