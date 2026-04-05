@@ -1,0 +1,26 @@
+﻿@model Volunteer
+@{
+    ViewData["Title"] = "Volunteer Details";
+}
+
+<h1>Volunteer Details</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PhoneNumber)</dt>
+    <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TotalHours)</dt>
+    <dd class="col-sm-9">@Model.TotalHours</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.VolunteerId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

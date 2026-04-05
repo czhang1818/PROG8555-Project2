@@ -1,0 +1,32 @@
+﻿@model Application
+@{
+    ViewData["Title"] = "Application Details";
+}
+
+<h1>Application Details</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">Volunteer</dt>
+    <dd class="col-sm-9">@Model.Volunteer?.Name</dd>
+
+    <dt class="col-sm-3">Opportunity</dt>
+    <dd class="col-sm-9">@Model.Opportunity?.Title</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SubmissionDate)</dt>
+    <dd class="col-sm-9">@Model.SubmissionDate.ToString("yyyy-MM-dd HH:mm")</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedByUserId)</dt>
+    <dd class="col-sm-9">@Model.CreatedByUserId</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LastModifiedBy)</dt>
+    <dd class="col-sm-9">@Model.LastModifiedBy</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LastModifiedAt)</dt>
+    <dd class="col-sm-9">@Model.LastModifiedAt?.ToString("yyyy-MM-dd HH:mm")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.AppId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
