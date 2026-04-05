@@ -1,54 +1,34 @@
-﻿@model PaginatedList<VSMS.Web2.Models.Skill>
-
+﻿@model PaginatedList<Skill>
 @{
     ViewData["Title"] = "Skills";
 }
 
 <h1>Skills</h1>
+<p><a asp-action="Create" class="btn btn-primary">Create New</a></p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.First().Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.First().Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.First().Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.First().RequiresCertification)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Category)</th>
+            <th>@Html.DisplayNameFor(model => model.First().RequiresCertification)</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequiresCertification)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SkillId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SkillId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SkillId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Category</td>
+                <td>@(item.RequiresCertification ? "Yes" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.SkillId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.SkillId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.SkillId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 

@@ -1,18 +1,18 @@
-﻿@model PaginatedList<Organization>
+﻿@model PaginatedList<Coordinator>
 @{
-    ViewData["Title"] = "Organizations";
+    ViewData["Title"] = "Coordinators";
 }
 
-<h1>Organizations</h1>
+<h1>Coordinators</h1>
 <p><a asp-action="Create" class="btn btn-primary">Create New</a></p>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>@Html.DisplayNameFor(model => model.First().Name)</th>
-            <th>@Html.DisplayNameFor(model => model.First().ContactEmail)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Website)</th>
-            <th>@Html.DisplayNameFor(model => model.First().IsVerified)</th>
+            <th>@Html.DisplayNameFor(model => model.First().JobTitle)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+            <th>Organization</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -21,13 +21,13 @@
         {
             <tr>
                 <td>@item.Name</td>
-                <td>@item.ContactEmail</td>
-                <td>@item.Website</td>
-                <td>@(item.IsVerified ? "Yes" : "No")</td>
+                <td>@item.JobTitle</td>
+                <td>@item.Email</td>
+                <td>@item.Organization?.Name</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.OrganizationId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.OrganizationId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.OrganizationId">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.CoordinatorId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.CoordinatorId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.CoordinatorId">Delete</a>
                 </td>
             </tr>
         }

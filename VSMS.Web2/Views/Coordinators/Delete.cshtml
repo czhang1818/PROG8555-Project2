@@ -1,0 +1,24 @@
+﻿@model Coordinator
+@{
+    ViewData["Title"] = "Delete Coordinator";
+}
+
+<h1>Delete Coordinator</h1>
+<h3>Are you sure you want to delete this?</h3>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.JobTitle)</dt>
+    <dd class="col-sm-9">@Model.JobTitle</dd>
+
+    <dt class="col-sm-3">Organization</dt>
+    <dd class="col-sm-9">@Model.Organization?.Name</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="CoordinatorId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>

@@ -1,42 +1,23 @@
-﻿@model VSMS.Web2.Models.Organization
-
+﻿@model Organization
 @{
     ViewData["Title"] = "Organization Details";
 }
 
-<h1>Details</h1>
+<h1>Organization Details</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
 
-<div>
-    <h4>Organization</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ContactEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Website)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Website)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsVerified)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsVerified)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.OrganizationId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ContactEmail)</dt>
+    <dd class="col-sm-9">@Model.ContactEmail</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Website)</dt>
+    <dd class="col-sm-9">@Model.Website</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IsVerified)</dt>
+    <dd class="col-sm-9">@(Model.IsVerified ? "Yes" : "No")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.OrganizationId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

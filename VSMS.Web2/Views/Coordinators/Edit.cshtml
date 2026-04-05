@@ -1,0 +1,43 @@
+﻿@model Coordinator
+@{
+    ViewData["Title"] = "Edit Coordinator";
+}
+
+<h1>Edit Coordinator</h1>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CoordinatorId" />
+            <div class="form-floating mb-3">
+                <select asp-for="OrganizationId" asp-items="@(ViewData["OrganizationId"] as SelectList)" class="form-select">
+                    <option value="">-- Select Organization --</option>
+                </select>
+                <label asp-for="OrganizationId">Organization</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" placeholder="Name" />
+                <label asp-for="Name"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="JobTitle" class="form-control" placeholder="Job Title" />
+                <label asp-for="JobTitle"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" placeholder="Email" />
+                <label asp-for="Email"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="PhoneNumber" class="form-control" placeholder="Phone" />
+                <label asp-for="PhoneNumber"></label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
