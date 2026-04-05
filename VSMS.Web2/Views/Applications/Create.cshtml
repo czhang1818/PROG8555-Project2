@@ -1,0 +1,40 @@
+﻿@model Application
+@{
+    ViewData["Title"] = "Create Application";
+}
+
+<h1>Create Application</h1>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating mb-3">
+                <select asp-for="VolunteerId" asp-items="@(ViewData["VolunteerId"] as SelectList)" class="form-select">
+                    <option value="">-- Select Volunteer --</option>
+                </select>
+                <label asp-for="VolunteerId">Volunteer</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="OpportunityId" asp-items="@(ViewData["OpportunityId"] as SelectList)" class="form-select">
+                    <option value="">-- Select Opportunity --</option>
+                </select>
+                <label asp-for="OpportunityId">Opportunity</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Status" class="form-select">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <label asp-for="Status"></label>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,38 @@
+﻿@model Skill
+@{
+    ViewData["Title"] = "Edit Skill";
+}
+
+<h1>Edit Skill</h1>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SkillId" />
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" placeholder="Name" />
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Category" class="form-control" placeholder="Category" />
+                <label asp-for="Category"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <textarea asp-for="Description" class="form-control" placeholder="Description" style="height:100px"></textarea>
+                <label asp-for="Description"></label>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="RequiresCertification" class="form-check-input" />
+                <label asp-for="RequiresCertification" class="form-check-label"></label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

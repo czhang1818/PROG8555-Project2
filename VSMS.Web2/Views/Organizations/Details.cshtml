@@ -1,0 +1,23 @@
+﻿@model Organization
+@{
+    ViewData["Title"] = "Organization Details";
+}
+
+<h1>Organization Details</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ContactEmail)</dt>
+    <dd class="col-sm-9">@Model.ContactEmail</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Website)</dt>
+    <dd class="col-sm-9">@Model.Website</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IsVerified)</dt>
+    <dd class="col-sm-9">@(Model.IsVerified ? "Yes" : "No")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.OrganizationId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

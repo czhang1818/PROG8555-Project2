@@ -1,0 +1,44 @@
+﻿@model Opportunity
+@{
+    ViewData["Title"] = "Edit Opportunity";
+}
+
+<h1>Edit Opportunity</h1>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="OpportunityId" />
+            <div class="form-floating mb-3">
+                <select asp-for="OrganizationId" asp-items="@(ViewData["OrganizationId"] as SelectList)" class="form-select">
+                    <option value="">-- Select Organization --</option>
+                </select>
+                <label asp-for="OrganizationId">Organization</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Title" class="form-control" placeholder="Title" />
+                <label asp-for="Title"></label>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="EventDate" class="form-control" type="datetime-local" />
+                <label asp-for="EventDate"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Location" class="form-control" placeholder="Location" />
+                <label asp-for="Location"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="MaxVolunteers" class="form-control" placeholder="Max" />
+                <label asp-for="MaxVolunteers"></label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -14,6 +14,7 @@ obj/
 .vscode/
 *.swp
 *~
+*.sln
 
 ## OS
 .DS_Store

@@ -1,0 +1,23 @@
+﻿@model Skill
+@{
+    ViewData["Title"] = "Skill Details";
+}
+
+<h1>Skill Details</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Category)</dt>
+    <dd class="col-sm-9">@Model.Category</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RequiresCertification)</dt>
+    <dd class="col-sm-9">@(Model.RequiresCertification ? "Yes" : "No")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.SkillId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
