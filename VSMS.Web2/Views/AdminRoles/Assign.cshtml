@@ -1,0 +1,61 @@
+@model AssignRoleViewModel
+@{
+    ViewData["Title"] = "Assign Roles";
+}
+
+<h1>Assign Roles</h1>
+<hr />
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h4>Assign a Role to a User</h4>
+        <form asp-action="Assign" method="post">
+            <div class="row g-3 align-items-end mb-4">
+                <div class="col-md-5">
+                    <label class="form-label">User</label>
+                    <select asp-for="SelectedUserId" asp-items="Model.Users" class="form-select">
+                        <option value="">-- Select User --</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Role</label>
+                    <select asp-for="SelectedRoleName" asp-items="Model.Roles" class="form-select">
+                        <option value="">-- Select Role --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Assign</button>
+                </div>
+            </div>
+        </form>
+
+        <h4>Current Assignments</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>User Email</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in Model.Assignments)
+                {
+                    <tr>
+                        <td>@entry.Email</td>
+                        <td>@entry.RoleName</td>
+                        <td>
+                            <form asp-action="RemoveAssignment" method="post" style="display:inline">
+                                <input type="hidden" name="userId" value="@entry.UserId" />
+                                <input type="hidden" name="roleName" value="@entry.RoleName" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a asp-action="Index" class="btn btn-secondary">Back to Roles</a>
+    </div>
+</div>
