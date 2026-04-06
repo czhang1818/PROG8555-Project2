@@ -21,7 +21,7 @@ namespace VSMS.Web2.Models
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
         [Display(Name = "Event Date")]
-        public DateTime EventDate { get; set; } = DateTime.Now;
+        public DateTime EventDate { get; set; } = DateTime.UtcNow;
 
         [Required]
         public string Location { get; set; } = string.Empty;

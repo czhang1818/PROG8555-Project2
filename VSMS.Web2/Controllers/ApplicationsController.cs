@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using VSMS.Web2.Models;
 using VSMS.Web2.Services.Interfaces;
 
@@ -10,134 +9,112 @@ namespace VSMS.Web2.Controllers
     [Authorize]
     public class ApplicationsController : Controller
     {
-        private readonly IApplicationService _appService;
-        private readonly IVolunteerService _volunteerService;
-        private readonly IOpportunityService _opportunityService;
+        private readonly IApplicationService _service;
+        private readonly IVolunteerService _volService;
+        private readonly IOpportunityService _oppService;
 
-        public ApplicationsController(IApplicationService appService, IVolunteerService volunteerService, IOpportunityService opportunityService)
+        public ApplicationsController(
+            IApplicationService service,
+            IVolunteerService volService,
+            IOpportunityService oppService)
         {
-            _appService = appService;
-            _volunteerService = volunteerService;
-            _opportunityService = opportunityService;
+            _service = service;
+            _volService = volService;
+            _oppService = oppService;
         }
 
-        // GET: Applications
-        public async Task<IActionResult> Index(int ? pageNumber)
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            var appList = await _appService.GetPaginatedApplicationsAsync(pageNumber ?? 1, 10);
-            return View(appList);
+            var list = await _service.GetPaginatedApplicationsAsync(pageNumber ?? 1, 10);
+            return View(list);
         }
 
-        // GET: Applications/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var application = await _appService.GetApplicationByIdAsync(id.Value);
-            if (application == null)
-            {
-                return NotFound();
-            }
-
-            return View(application);
+            if (id == null) return NotFound();
+            var app = await _service.GetApplicationByIdAsync(id.Value);
+            if (app == null) return NotFound();
+            return View(app);
         }
 
-        // GET: Applications/Create
-        [Authorize(Roles = "Admin, Coordinator")]
+        [Authorize(Roles = "Admin,Coordinator")]
         public async Task<IActionResult> Create()
         {
-            ViewData["OpportunityId"] = new SelectList(await _opportunityService.GetAllOpportunitiesAsync(), "OpportunityId", "Title");
-            ViewData["VolunteerId"] = new SelectList(await _volunteerService.GetAllVolunteersAsync(), "VolunteerId", "Name");
+            ViewData["VolunteerId"] = new SelectList(
+                await _volService.GetAllVolunteersAsync(), "VolunteerId", "Name");
+            ViewData["OpportunityId"] = new SelectList(
+                await _oppService.GetAllOpportunitiesAsync(), "OpportunityId", "Title");
             return View();
         }
 
-        // POST: Applications/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Coordinator")]
+        [Authorize(Roles = "Admin,Coordinator")]
         public async Task<IActionResult> Create(Application application)
         {
             if (ModelState.IsValid)
             {
+                // Audit tracking
                 application.CreatedByUserId = User.Identity?.Name;
-                await _appService.AddApplicationAsync(application);
+                await _service.AddApplicationAsync(application);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OpportunityId"] = new SelectList(await _opportunityService.GetAllOpportunitiesAsync(), "OpportunityId", "Title", application.OpportunityId);
-            ViewData["VolunteerId"] = new SelectList(await _volunteerService.GetAllVolunteersAsync(), "VolunteerId", "Name", application.VolunteerId);
+            ViewData["VolunteerId"] = new SelectList(
+                await _volService.GetAllVolunteersAsync(), "VolunteerId", "Name", application.VolunteerId);
+            ViewData["OpportunityId"] = new SelectList(
+                await _oppService.GetAllOpportunitiesAsync(), "OpportunityId", "Title", application.OpportunityId);
             return View(application);
         }
 
-        // GET: Applications/Edit/5
-        [Authorize(Roles = "Admin, Coordinator")]
+        [Authorize(Roles = "Admin,Coordinator")]
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var application = await _appService.GetApplicationByIdAsync(id.Value);
-            if (application == null)
-            {
-                return NotFound();
-            }
-            ViewData["OpportunityId"] = new SelectList(await _opportunityService.GetAllOpportunitiesAsync(), "OpportunityId", "Title", application.OpportunityId);
-            ViewData["VolunteerId"] = new SelectList(await _volunteerService.GetAllVolunteersAsync(), "VolunteerId", "Name", application.VolunteerId);
-            return View(application);
+            if (id == null) return NotFound();
+            var app = await _service.GetApplicationByIdAsync(id.Value);
+            if (app == null) return NotFound();
+            ViewData["VolunteerId"] = new SelectList(
+                await _volService.GetAllVolunteersAsync(), "VolunteerId", "Name", app.VolunteerId);
+            ViewData["OpportunityId"] = new SelectList(
+                await _oppService.GetAllOpportunitiesAsync(), "OpportunityId", "Title", app.OpportunityId);
+            return View(app);
         }
 
-        // POST: Applications/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Coordinator")]
+        [Authorize(Roles = "Admin,Coordinator")]
         public async Task<IActionResult> Edit(Guid id, Application application)
         {
-            if (id != application.AppId)
-            {
-                return NotFound();
-            }
-
+            if (id != application.AppId) return NotFound();
             if (ModelState.IsValid)
             {
+                // Audit tracking
                 application.LastModifiedBy = User.Identity?.Name;
                 application.LastModifiedAt = DateTime.UtcNow;
-                await _appService.UpdateApplicationAsync(application);
+                await _service.UpdateApplicationAsync(application);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OpportunityId"] = new SelectList(await _opportunityService.GetAllOpportunitiesAsync(), "OpportunityId", "Title", application.OpportunityId);
-            ViewData["VolunteerId"] = new SelectList(await _volunteerService.GetAllVolunteersAsync(), "VolunteerId", "Name", application.VolunteerId);
+            ViewData["VolunteerId"] = new SelectList(
+                await _volService.GetAllVolunteersAsync(), "VolunteerId", "Name", application.VolunteerId);
+            ViewData["OpportunityId"] = new SelectList(
+                await _oppService.GetAllOpportunitiesAsync(), "OpportunityId", "Title", application.OpportunityId);
             return View(application);
         }
 
-        // GET: Applications/Delete/5
-        [Authorize(Roles = "Admin, Coordinator")]
+        [Authorize(Roles = "Admin,Coordinator")]
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var application = await _appService.GetApplicationByIdAsync(id.Value);
-            if (application == null)
-            {
-                return NotFound();
-            }
-
-            return View(application);
+            if (id == null) return NotFound();
+            var app = await _service.GetApplicationByIdAsync(id.Value);
+            if (app == null) return NotFound();
+            return View(app);
         }
 
-        // POST: Applications/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Coordinator")]
+        [Authorize(Roles = "Admin,Coordinator")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _appService.DeleteApplicationAsync(id);
+            await _service.DeleteApplicationAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,26 +1,43 @@
-﻿@model Volunteer
+@model Application
 @{
-    ViewData["Title"] = "Volunteer Details";
+    ViewData["Title"] = "Edit Application";
 }
 
-<h1>Volunteer Details</h1>
+<h1>Edit Application</h1>
 <hr />
-<dl class="row">
-    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
-    <dd class="col-sm-9">@Model.Name</dd>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AppId" />
+            <input type="hidden" asp-for="CreatedByUserId" />
+            <input type="hidden" asp-for="SubmissionDate" />
+            <div class="form-floating mb-3">
+                <select asp-for="VolunteerId" asp-items="@(ViewData["VolunteerId"] as SelectList)" class="form-select">
+                    <option value="">-- Select Volunteer --</option>
+                </select>
+                <label asp-for="VolunteerId">Volunteer</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="OpportunityId" asp-items="@(ViewData["OpportunityId"] as SelectList)" class="form-select">
+                    <option value="">-- Select Opportunity --</option>
+                </select>
+                <label asp-for="OpportunityId">Opportunity</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Status" class="form-select">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <label asp-for="Status"></label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</div>
 
-    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
-    <dd class="col-sm-9">@Model.Email</dd>
-
-    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PhoneNumber)</dt>
-    <dd class="col-sm-9">@Model.PhoneNumber</dd>
-
-    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TotalHours)</dt>
-    <dd class="col-sm-9">@Model.TotalHours</dd>
-
-    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
-    <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
-</dl>
-
-<a asp-action="Edit" asp-route-id="@Model.VolunteerId" class="btn btn-primary">Edit</a>
-<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
