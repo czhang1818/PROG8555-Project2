@@ -1,8 +1,43 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero-section text-center">
+    <h1 class="display-4 fw-bold">Volunteer Services Management System</h1>
+    <p class="lead mt-3">Connecting volunteers with meaningful opportunities to make a difference.</p>
+    <div class="mt-4">
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary btn-lg me-2">Go to Dashboard</a>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg me-2">Log In</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg">Register</a>
+        }
+    </div>
+</div>
+
+<div class="row g-4 mt-5">
+    <div class="col-md-4">
+        <div class="card glass-card text-center p-4">
+            <div class="stat-icon">🤝</div>
+            <h4>Find Opportunities</h4>
+            <p class="text-muted">Browse volunteer opportunities from verified organizations in your community.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card glass-card text-center p-4">
+            <div class="stat-icon">📊</div>
+            <h4>Track Your Impact</h4>
+            <p class="text-muted">Monitor your volunteer hours, skills, and application status in real-time.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card glass-card text-center p-4">
+            <div class="stat-icon">🏢</div>
+            <h4>Manage Organizations</h4>
+            <p class="text-muted">Coordinators can create events, manage volunteers, and track participation.</p>
+        </div>
+    </div>
 </div>
