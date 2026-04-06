@@ -1,0 +1,137 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-header">
+    <h1>📊 System Dashboard</h1>
+    <p class="text-muted">Welcome back! Here's an overview of the Volunteer Services Management System.</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card stat-volunteers">
+            <div class="card-body text-center">
+                <div class="stat-icon">👥</div>
+                <h3 class="stat-number">@Model.TotalVolunteers</h3>
+                <p class="stat-label">Volunteers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card stat-organizations">
+            <div class="card-body text-center">
+                <div class="stat-icon">🏢</div>
+                <h3 class="stat-number">@Model.TotalOrganizations</h3>
+                <p class="stat-label">Organizations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card stat-opportunities">
+            <div class="card-body text-center">
+                <div class="stat-icon">🎯</div>
+                <h3 class="stat-number">@Model.TotalOpportunities</h3>
+                <p class="stat-label">Opportunities</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card stat-applications">
+            <div class="card-body text-center">
+                <div class="stat-icon">📋</div>
+                <h3 class="stat-number">@Model.TotalApplications</h3>
+                <p class="stat-label">Applications</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card stat-skills">
+            <div class="card-body text-center">
+                <div class="stat-icon">⚡</div>
+                <h3 class="stat-number">@Model.TotalSkills</h3>
+                <p class="stat-label">Skills</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card stat-card stat-coordinators">
+            <div class="card-body text-center">
+                <div class="stat-icon">🎓</div>
+                <h3 class="stat-number">@Model.TotalCoordinators</h3>
+                <p class="stat-label">Coordinators</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Application Status + Recent Activities -->
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card glass-card">
+            <div class="card-header"><h5 class="mb-0">📊 Application Status</h5></div>
+            <div class="card-body">
+                <div class="status-bar-group">
+                    <div class="status-item">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Pending</span>
+                            <span class="badge bg-warning text-dark">@Model.PendingApplications</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" style="width: @(Model.TotalApplications > 0 ? (Model.PendingApplications * 100 / Model.TotalApplications) : 0)%"></div>
+                        </div>
+                    </div>
+                    <div class="status-item mt-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Approved</span>
+                            <span class="badge bg-success">@Model.ApprovedApplications</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: @(Model.TotalApplications > 0 ? (Model.ApprovedApplications * 100 / Model.TotalApplications) : 0)%"></div>
+                        </div>
+                    </div>
+                    <div class="status-item mt-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Rejected</span>
+                            <span class="badge bg-danger">@Model.RejectedApplications</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" style="width: @(Model.TotalApplications > 0 ? (Model.RejectedApplications * 100 / Model.TotalApplications) : 0)%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card glass-card">
+            <div class="card-header"><h5 class="mb-0">🕐 Recent Opportunities</h5></div>
+            <div class="card-body">
+                @if (Model.RecentActivities.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var activity in Model.RecentActivities)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                <div>
+                                    <span class="me-2">@activity.Icon</span>
+                                    <strong>@activity.Title</strong>
+                                    <br /><small class="text-muted">@activity.Description</small>
+                                </div>
+                                <small class="text-muted">@activity.Date.ToString("MMM dd, yyyy")</small>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center my-4">No recent opportunities yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
