@@ -41,186 +41,94 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 
 ## 2. Screenshots
 
-### 2.1 Home Page (Not Logged In)
+### 2.1 Authentication
 
+#### Home Page (Not Logged In)
 ![Home Page](screenshots/01_home.png)
 
-### 2.2 Login Page
-
+#### Login Page
 ![Login Page](screenshots/02_login.png)
 
-### 2.3 Register Page
-
+#### Register Page
 ![Register Page](screenshots/03_register.png)
 
-### 2.4 Home Page (Logged In as Admin)
+### 2.2 Dashboard
 
+#### Home Page (Logged In as Admin)
 ![Home Logged In](screenshots/04_home_logged_in.png)
 
-### 2.5 Dashboard
-
+#### Dashboard
 ![Dashboard](screenshots/05_dashboard.png)
 
-### 2.6 Organizations List
+### 2.3 CRUD Operations
 
-![Organizations](screenshots/06_organizations.png)
+#### Organizations
 
-### 2.7 Opportunities List
-
-![Opportunities](screenshots/07_opportunities.png)
-
-### 2.8 Volunteers List
-
-![Volunteers](screenshots/08_volunteers.png)
-
-### 2.9 Coordinators List
-
-![Coordinators](screenshots/09_coordinators.png)
-
-### 2.10 Applications List
-
-![Applications](screenshots/10_applications.png)
-
-### 2.11 Skills List
-
-![Skills](screenshots/11_skills.png)
-
-### 2.12 Admin - Manage Users
-
-![Manage Users](screenshots/12_admin_users.png)
-
-### 2.13 Admin - Create User
-
-![Create User](screenshots/13_admin_create_user.png)
-
-### 2.14 Admin - Manage Roles
-
-![Manage Roles](screenshots/14_admin_roles.png)
-
-### 2.15 Admin - Assign Roles
-
-![Assign Roles](screenshots/15_admin_assign_role.png)
-
----
-
-## 2.16 CRUD Operations
-
-### Organizations
-
-#### Index
 ![Organizations Index](screenshots/OrganizationsIndex.png)
-
-#### Create
 ![Organizations Create](screenshots/OrganizationsCreate.png)
-
-#### Details
 ![Organizations Details](screenshots/OrganizationsDetails.png)
-
-#### Edit
 ![Organizations Edit](screenshots/OrganizationsEdit.png)
-
-#### Delete
 ![Organizations Delete](screenshots/OrganizationsDelete.png)
 
+#### Opportunities
 
-### Opportunities
-
-#### Index
 ![Opportunities Index](screenshots/OpportunitiesIndex.png)
-
-#### Create
 ![Opportunity Create](screenshots/OpportunityCreate.png)
-
-#### Details
 ![Opportunity Details](screenshots/OpportunityDetails.png)
-
-#### Edit
 ![Opportunity Edit](screenshots/OpportunityEdit.png)
-
-#### Delete
 ![Opportunity Delete](screenshots/OpportunityDelete.png)
+![Opportunity DropDown for Organization](screenshots/OpportunityDropDown.png)
 
-#### Drop Down for Organization
-![Opportunity DropDown](screenshots/OpportunityDropDown.png)
+#### Volunteers
 
-### Volunteers
-
-#### Index
 ![Volunteer Index](screenshots/VolunteerIndex.png)
-
-#### Create
 ![Volunteer Create](screenshots/VolunteerCreate.png)
-
-#### Details
 ![Volunteer Details](screenshots/VolunteerDetails.png)
-
-#### Edit
 ![Volunteer Edit](screenshots/VolunteerEdit.png)
-
-#### Delete
 ![Volunteer Delete](screenshots/VolunteerDelete.png)
 
-### Coordinators
+#### Coordinators
 
-#### Index
 ![Coordinator Index](screenshots/CoordinatorIndex.png)
-
-#### Create
 ![Coordinator Create](screenshots/CoordinatorCreate.png)
-
-#### Details
 ![Coordinator Details](screenshots/CoordinatorDetails.png)
-
-#### Edit
 ![Coordinator Edit](screenshots/CoordinatorEdit.png)
-
-#### Delete
 ![Coordinator Delete](screenshots/CoordinatorDelete.png)
+![Coordinator DropDown for Organization](screenshots/CoordinatorDropDown.png)
 
-#### Drop Down for Organization
-![Coordinator DropDown](screenshots/CoordinatorDropDown.png)
+#### Applications
 
-### Applications
-
-#### Index
 ![Applications Index](screenshots/ApplicationsIndex.png)
-
-#### Create
 ![Applications Create](screenshots/ApplicationsCreate.png)
-
-#### Details
 ![Application Details](screenshots/ApplicationDetails.png)
-
-#### Edit
 ![Application Edit](screenshots/ApplicationEdit.png)
-
-#### Delete
 ![Application Delete](screenshots/ApplicationDelete.png)
+![Applications DropDown for Volunteer](screenshots/ApplicationsDropDown1.png)
+![Applications DropDown for Opportunity](screenshots/ApplicationsDropDown2.png)
 
-#### Drop Down for Volunteer
-![Applications DropDown 1](screenshots/ApplicationsDropDown1.png)
+#### Skills
 
-#### Drop Down for Opportunity
-![Applications DropDown 2](screenshots/ApplicationsDropDown2.png)
-
-### Skills
-
-#### Index
 ![Skill Index](screenshots/SkillIndex.png)
-
-#### Create
 ![Skill Create](screenshots/SkillCreate.png)
-
-#### Details
 ![Skill Details](screenshots/SkillDetails.png)
-
-#### Edit
 ![Skill Edit](screenshots/SkillEdit.png)
-
-#### Delete
 ![Skill Delete](screenshots/SkillDelete.png)
 
-### Access Denied
+### 2.4 Admin Management
+
+#### Manage Users
+![Manage Users](screenshots/12_admin_users.png)
+
+#### Create User
+![Create User](screenshots/13_admin_create_user.png)
+
+#### Manage Roles
+![Manage Roles](screenshots/14_admin_roles.png)
+
+#### Assign Roles
+![Assign Roles](screenshots/15_admin_assign_role.png)
+
+### 2.5 Access Denied
 
 ![Access Denied](screenshots/DenyPage.jpeg)
 
