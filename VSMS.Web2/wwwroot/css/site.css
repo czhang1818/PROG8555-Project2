@@ -35,8 +35,6 @@
 /* ---------- Base ---------- */
 html {
     font-size: 14px;
-    position: relative;
-    min-height: 100%;
 }
 
 body {
@@ -44,8 +42,9 @@ body {
     background: var(--bg-body);
     background-attachment: fixed;
     color: var(--text-primary);
-    margin-bottom: 60px;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -126,6 +125,7 @@ a:hover {
 /* ---------- Container & Main ---------- */
 .container {
     max-width: 1200px;
+    flex: 1;
 }
 
 main {
@@ -479,9 +479,6 @@ dd {
 
 /* ---------- Footer ---------- */
 .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
     background: rgba(255, 255, 255, 0.45);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);

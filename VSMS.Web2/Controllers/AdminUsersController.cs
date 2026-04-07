@@ -23,8 +23,9 @@ namespace VSMS.Web2.Controllers
         }
 
         // GET: AdminUsers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
+            const int pageSize = 8;
             var users = await _userManager.Users.ToListAsync();
             var viewModels = new List<AdminUserViewModel>();
 
@@ -42,7 +43,18 @@ namespace VSMS.Web2.Controllers
                 });
             }
 
-            return View(viewModels);
+            int currentPage = pageNumber ?? 1;
+            int totalItems = viewModels.Count;
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            var pagedItems = viewModels
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewData["PageIndex"] = currentPage;
+            ViewData["TotalPages"] = totalPages;
+
+            return View(pagedItems);
         }
 
         // GET: AdminUsers/Details/5

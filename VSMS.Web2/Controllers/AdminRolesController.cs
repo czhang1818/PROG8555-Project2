@@ -124,13 +124,27 @@ namespace VSMS.Web2.Controllers
         }
 
         // GET: AdminRoles/Assign
-        public async Task<IActionResult> Assign()
+        public async Task<IActionResult> Assign(int? pageNumber)
         {
+            const int pageSize = 8;
+            var allAssignments = await GetAllAssignments();
+
+            int currentPage = pageNumber ?? 1;
+            int totalItems = allAssignments.Count;
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            var pagedAssignments = allAssignments
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewData["PageIndex"] = currentPage;
+            ViewData["TotalPages"] = totalPages;
+
             var vm = new AssignRoleViewModel
             {
                 Users = new SelectList(await _userManager.Users.ToListAsync(), "Id", "Email"),
                 Roles = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name"),
-                Assignments = await GetAllAssignments()
+                Assignments = pagedAssignments
             };
             return View(vm);
         }
