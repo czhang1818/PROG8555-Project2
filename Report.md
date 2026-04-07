@@ -2,14 +2,14 @@
 # Group Project - Part 2
 # Secure User System, Roles, and Admin Dashboard
 
-## Group Information
+## Group 1 Information
 
 | Name | Student Number |
 |---|---|
-| Bo Yang | XXXXXXXX |
-| Bo Zhang | XXXXXXXX |
-| Chunxi Zhang | XXXXXXXX |
-| Marieth Franciss Perez Zevallos | XXXXXXXX |
+| Bo Yang | 9086117 |
+| Bo Zhang | 8857286 |
+| Chunxi Zhang | 8971818 |
+| Marieth Franciss Perez Zevallos | 9016702 |
 
 
 
@@ -41,65 +41,129 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 
 ## 2. Screenshots
 
-### 2.1 Home Page (Not Logged In)
+### 2.1 Organizations
 
-![Home Page](screenshots/01_home.png)
+#### Index
+![Organizations Index](screenshots/OrganizationsIndex.png)
 
-### 2.2 Login Page
+#### Create
+![Organizations Create](screenshots/OrganizationsCreate.png)
 
-![Login Page](screenshots/02_login.png)
+#### Details
+![Organizations Details](screenshots/OrganizationsDetails.png)
 
-### 2.3 Register Page
+#### Edit
+![Organizations Edit](screenshots/OrganizationsEdit.png)
 
-![Register Page](screenshots/03_register.png)
+#### Delete
+![Organizations Delete](screenshots/OrganizationsDelete.png)
 
-### 2.4 Home Page (Logged In as Admin)
 
-![Home Logged In](screenshots/04_home_logged_in.png)
+### 2.2 Opportunities
 
-### 2.5 Dashboard
+#### Index
+![Opportunities Index](screenshots/OpportunitiesIndex.png)
 
-![Dashboard](screenshots/05_dashboard.png)
+#### Create
+![Opportunity Create](screenshots/OpportunityCreate.png)
 
-### 2.6 Organizations List
+#### Details
+![Opportunity Details](screenshots/OpportunityDetails.png)
 
-![Organizations](screenshots/06_organizations.png)
+#### Edit
+![Opportunity Edit](screenshots/OpportunityEdit.png)
 
-### 2.7 Opportunities List
+#### Delete
+![Opportunity Delete](screenshots/OpportunityDelete.png)
 
-![Opportunities](screenshots/07_opportunities.png)
+#### Drop Down for Organization
+![Opportunity DropDown](screenshots/OpportunityDropDown.png)
 
-### 2.8 Volunteers List
 
-![Volunteers](screenshots/08_volunteers.png)
+### 2.3 Volunteers
 
-### 2.9 Coordinators List
+#### Index
+![Volunteer Index](screenshots/VolunteerIndex.png)
 
-![Coordinators](screenshots/09_coordinators.png)
+#### Create
+![Volunteer Create](screenshots/VolunteerCreate.png)
 
-### 2.10 Applications List
+#### Details
+![Volunteer Details](screenshots/VolunteerDetails.png)
 
-![Applications](screenshots/10_applications.png)
+#### Edit
+![Volunteer Edit](screenshots/VolunteerEdit.png)
 
-### 2.11 Skills List
+#### Delete
+![Volunteer Delete](screenshots/VolunteerDelete.png)
 
-![Skills](screenshots/11_skills.png)
 
-### 2.12 Admin - Manage Users
+### 2.4 Coordinators
 
-![Manage Users](screenshots/12_admin_users.png)
+#### Index
+![Coordinator Index](screenshots/CoordinatorIndex.png)
 
-### 2.13 Admin - Create User
+#### Create
+![Coordinator Create](screenshots/CoordinatorCreate.png)
 
-![Create User](screenshots/13_admin_create_user.png)
+#### Details
+![Coordinator Details](screenshots/CoordinatorDetails.png)
 
-### 2.14 Admin - Manage Roles
+#### Edit
+![Coordinator Edit](screenshots/CoordinatorEdit.png)
 
-![Manage Roles](screenshots/14_admin_roles.png)
+#### Delete
+![Coordinator Delete](screenshots/CoordinatorDelete.png)
 
-### 2.15 Admin - Assign Roles
+#### Drop Down for Organization
+![Coordinator DropDown](screenshots/CoordinatorDropDown.png)
 
-![Assign Roles](screenshots/15_admin_assign_role.png)
+
+### 2.5 Applications
+
+#### Index
+![Applications Index](screenshots/ApplicationsIndex.png)
+
+#### Create
+![Applications Create](screenshots/ApplicationsCreate.png)
+
+#### Details
+![Application Details](screenshots/ApplicationDetails.png)
+
+#### Edit
+![Application Edit](screenshots/ApplicationEdit.png)
+
+#### Delete
+![Application Delete](screenshots/ApplicationDelete.png)
+
+#### Drop Down for Volunteer
+![Applications DropDown 1](screenshots/ApplicationsDropDown1.png)
+
+#### Drop Down for Opportunity
+![Applications DropDown 2](screenshots/ApplicationsDropDown2.png)
+
+
+### 2.6 Skills
+
+#### Index
+![Skill Index](screenshots/SkillIndex.png)
+
+#### Create
+![Skill Create](screenshots/SkillCreate.png)
+
+#### Details
+![Skill Details](screenshots/SkillDetails.png)
+
+#### Edit
+![Skill Edit](screenshots/SkillEdit.png)
+
+#### Delete
+![Skill Delete](screenshots/SkillDelete.png)
+
+
+### 2.7 Access Denied
+
+![Access Denied](screenshots/DenyPage.jpeg)
 
 ---
 
