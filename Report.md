@@ -41,7 +41,71 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 
 ## 2. Screenshots
 
-### 2.1 Organizations
+### 2.1 Home Page (Not Logged In)
+
+![Home Page](screenshots/01_home.png)
+
+### 2.2 Login Page
+
+![Login Page](screenshots/02_login.png)
+
+### 2.3 Register Page
+
+![Register Page](screenshots/03_register.png)
+
+### 2.4 Home Page (Logged In as Admin)
+
+![Home Logged In](screenshots/04_home_logged_in.png)
+
+### 2.5 Dashboard
+
+![Dashboard](screenshots/05_dashboard.png)
+
+### 2.6 Organizations List
+
+![Organizations](screenshots/06_organizations.png)
+
+### 2.7 Opportunities List
+
+![Opportunities](screenshots/07_opportunities.png)
+
+### 2.8 Volunteers List
+
+![Volunteers](screenshots/08_volunteers.png)
+
+### 2.9 Coordinators List
+
+![Coordinators](screenshots/09_coordinators.png)
+
+### 2.10 Applications List
+
+![Applications](screenshots/10_applications.png)
+
+### 2.11 Skills List
+
+![Skills](screenshots/11_skills.png)
+
+### 2.12 Admin - Manage Users
+
+![Manage Users](screenshots/12_admin_users.png)
+
+### 2.13 Admin - Create User
+
+![Create User](screenshots/13_admin_create_user.png)
+
+### 2.14 Admin - Manage Roles
+
+![Manage Roles](screenshots/14_admin_roles.png)
+
+### 2.15 Admin - Assign Roles
+
+![Assign Roles](screenshots/15_admin_assign_role.png)
+
+---
+
+## 2.16 CRUD Operations
+
+### Organizations
 
 #### Index
 ![Organizations Index](screenshots/OrganizationsIndex.png)
@@ -59,7 +123,7 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 ![Organizations Delete](screenshots/OrganizationsDelete.png)
 
 
-### 2.2 Opportunities
+### Opportunities
 
 #### Index
 ![Opportunities Index](screenshots/OpportunitiesIndex.png)
@@ -79,8 +143,7 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 #### Drop Down for Organization
 ![Opportunity DropDown](screenshots/OpportunityDropDown.png)
 
-
-### 2.3 Volunteers
+### Volunteers
 
 #### Index
 ![Volunteer Index](screenshots/VolunteerIndex.png)
@@ -97,8 +160,7 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 #### Delete
 ![Volunteer Delete](screenshots/VolunteerDelete.png)
 
-
-### 2.4 Coordinators
+### Coordinators
 
 #### Index
 ![Coordinator Index](screenshots/CoordinatorIndex.png)
@@ -118,8 +180,7 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 #### Drop Down for Organization
 ![Coordinator DropDown](screenshots/CoordinatorDropDown.png)
 
-
-### 2.5 Applications
+### Applications
 
 #### Index
 ![Applications Index](screenshots/ApplicationsIndex.png)
@@ -142,8 +203,7 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 #### Drop Down for Opportunity
 ![Applications DropDown 2](screenshots/ApplicationsDropDown2.png)
 
-
-### 2.6 Skills
+### Skills
 
 #### Index
 ![Skill Index](screenshots/SkillIndex.png)
@@ -160,8 +220,7 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 #### Delete
 ![Skill Delete](screenshots/SkillDelete.png)
 
-
-### 2.7 Access Denied
+### Access Denied
 
 ![Access Denied](screenshots/DenyPage.jpeg)
 
