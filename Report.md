@@ -1165,6 +1165,25 @@ else
 </div>
 ```
 
+### 8.8 AccessDenied.cshtml (when the user is not authorized)
+
+```html
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="alert alert-danger p-5">
+            <h1 class="display-4">403</h1>
+            <h2>Access Denied</h2>
+            <p class="mt-3">You do not have permission to access this page.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Go to Home</a>
+        </div>
+    </div>
+</div>
+```
+
 ---
 
 ## 9. Role Seeder
@@ -1208,4 +1227,3 @@ public static class RoleSeeder
     }
 }
 ```
-
