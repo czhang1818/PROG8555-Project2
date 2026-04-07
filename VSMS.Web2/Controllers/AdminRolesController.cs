@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using VSMS.Web2.Data;
 using VSMS.Web2.Models;
 using VSMS.Web2.ViewModels;
 
@@ -13,13 +14,16 @@ namespace VSMS.Web2.Controllers
     {
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
 
         public AdminRolesController(
             RoleManager<IdentityRole<Guid>> roleManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            AppDbContext context)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _context = context;
         }
 
         // GET: AdminRoles
@@ -127,15 +131,16 @@ namespace VSMS.Web2.Controllers
         public async Task<IActionResult> Assign(int? pageNumber)
         {
             const int pageSize = 8;
-            var allAssignments = await GetAllAssignments();
-
             int currentPage = pageNumber ?? 1;
-            int totalItems = allAssignments.Count;
+
+            var query = GetAssignmentsQuery();
+            int totalItems = await query.CountAsync();
             int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            var pagedAssignments = allAssignments
+
+            var pagedAssignments = await query
                 .Skip((currentPage - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
             ViewData["PageIndex"] = currentPage;
             ViewData["TotalPages"] = totalPages;
@@ -179,24 +184,19 @@ namespace VSMS.Web2.Controllers
             return RedirectToAction(nameof(Assign));
         }
 
-        private async Task<List<UserRoleEntry>> GetAllAssignments()
+        // Returns IQueryable so pagination happens at SQL level
+        private IQueryable<UserRoleEntry> GetAssignmentsQuery()
         {
-            var entries = new List<UserRoleEntry>();
-            var users = await _userManager.Users.ToListAsync();
-            foreach (var user in users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                foreach (var role in roles)
-                {
-                    entries.Add(new UserRoleEntry
-                    {
-                        UserId = user.Id,
-                        Email = user.Email ?? "",
-                        RoleName = role
-                    });
-                }
-            }
-            return entries;
+            return from ur in _context.UserRoles
+                   join u in _context.Users on ur.UserId equals u.Id
+                   join r in _context.Roles on ur.RoleId equals r.Id
+                   orderby u.Email, r.Name
+                   select new UserRoleEntry
+                   {
+                       UserId = u.Id,
+                       Email = u.Email ?? "",
+                       RoleName = r.Name ?? ""
+                   };
         }
     }
 }

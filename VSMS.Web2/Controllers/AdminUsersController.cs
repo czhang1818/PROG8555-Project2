@@ -26,9 +26,20 @@ namespace VSMS.Web2.Controllers
         public async Task<IActionResult> Index(int? pageNumber)
         {
             const int pageSize = 8;
-            var users = await _userManager.Users.ToListAsync();
-            var viewModels = new List<AdminUserViewModel>();
+            int currentPage = pageNumber ?? 1;
 
+            // Paginate at DB level first
+            var totalItems = await _userManager.Users.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var users = await _userManager.Users
+                .OrderBy(u => u.CreatedAt)
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Only query roles for current page's users
+            var viewModels = new List<AdminUserViewModel>();
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -43,18 +54,10 @@ namespace VSMS.Web2.Controllers
                 });
             }
 
-            int currentPage = pageNumber ?? 1;
-            int totalItems = viewModels.Count;
-            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            var pagedItems = viewModels
-                .Skip((currentPage - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
             ViewData["PageIndex"] = currentPage;
             ViewData["TotalPages"] = totalPages;
 
-            return View(pagedItems);
+            return View(viewModels);
         }
 
         // GET: AdminUsers/Details/5

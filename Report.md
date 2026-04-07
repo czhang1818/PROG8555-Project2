@@ -711,21 +711,77 @@ public class AccountController : Controller
 Admin-only controller for managing users. Supports CRUD + lock/unlock + password reset.
 
 ```csharp
-[Authorize(Roles = "Admin")]
-public class AdminUsersController : Controller
-{
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using VSMS.Web2.Models;
+using VSMS.Web2.ViewModels;
 
-    // GET: AdminUsers - lists all users with their roles and lock status
-    public async Task<IActionResult> Index()
+namespace VSMS.Web2.Controllers
+{
+    [Authorize(Roles = "Admin")]
+    public class AdminUsersController : Controller
     {
-        var users = await _userManager.Users.ToListAsync();
-        var viewModels = new List<AdminUserViewModel>();
-        foreach (var user in users)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+
+        public AdminUsersController(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole<Guid>> roleManager)
         {
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        // GET: AdminUsers
+        public async Task<IActionResult> Index(int? pageNumber)
+        {
+            const int pageSize = 8;
+            int currentPage = pageNumber ?? 1;
+
+            // Paginate at DB level first
+            var totalItems = await _userManager.Users.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var users = await _userManager.Users
+                .OrderBy(u => u.CreatedAt)
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Only query roles for current page's users
+            var viewModels = new List<AdminUserViewModel>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                viewModels.Add(new AdminUserViewModel
+                {
+                    Id = user.Id,
+                    Email = user.Email ?? "",
+                    FullName = user.FullName,
+                    Roles = roles.ToList(),
+                    IsLocked = user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow,
+                    CreatedAt = user.CreatedAt
+                });
+            }
+
+            ViewData["PageIndex"] = currentPage;
+            ViewData["TotalPages"] = totalPages;
+
+            return View(viewModels);
+        }
+
+        // GET: AdminUsers/Details/5
+        public async Task<IActionResult> Details(Guid? id)
+        {
+            if (id == null) return NotFound();
+            var user = await _userManager.FindByIdAsync(id.Value.ToString());
+            if (user == null) return NotFound();
+
             var roles = await _userManager.GetRolesAsync(user);
-            viewModels.Add(new AdminUserViewModel
+            var vm = new AdminUserViewModel
             {
                 Id = user.Id,
                 Email = user.Email ?? "",
@@ -733,73 +789,198 @@ public class AdminUsersController : Controller
                 Roles = roles.ToList(),
                 IsLocked = user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow,
                 CreatedAt = user.CreatedAt
-            });
+            };
+            return View(vm);
         }
-        return View(viewModels);
-    }
 
-    // POST: AdminUsers/Edit - updates email, name, role (dropdown), and optional password reset
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, AdminUserEditViewModel model)
-    {
-        if (id != model.Id) return NotFound();
-        if (ModelState.IsValid)
+        // GET: AdminUsers/Create
+        public IActionResult Create()
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user == null) return NotFound();
-
-            user.Email = model.Email;
-            user.UserName = model.Email;
-            user.FullName = model.FullName;
-            await _userManager.UpdateAsync(user);
-
-            // Update role
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, currentRoles);
-            if (!string.IsNullOrEmpty(model.SelectedRole))
+            var vm = new AdminUserEditViewModel
             {
-                await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                RoleList = new SelectList(_roleManager.Roles.ToList(), "Name", "Name")
+            };
+            return View(vm);
+        }
+
+        // POST: AdminUsers/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(AdminUserEditViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.NewPassword))
+            {
+                ModelState.AddModelError("NewPassword", "Password is required for new users.");
             }
 
-            // Reset password if provided
-            if (!string.IsNullOrEmpty(model.NewPassword))
+            if (ModelState.IsValid)
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    EmailConfirmed = true
+                };
+                var result = await _userManager.CreateAsync(user, model.NewPassword!);
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(model.SelectedRole))
+                    {
+                        await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            model.RoleList = new SelectList(_roleManager.Roles.ToList(), "Name", "Name", model.SelectedRole);
+            return View(model);
+        }
+
+        // GET: AdminUsers/Edit/5
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            if (id == null) return NotFound();
+            var user = await _userManager.FindByIdAsync(id.Value.ToString());
+            if (user == null) return NotFound();
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var vm = new AdminUserEditViewModel
+            {
+                Id = user.Id,
+                Email = user.Email ?? "",
+                FullName = user.FullName,
+                SelectedRole = roles.FirstOrDefault() ?? "",
+                RoleList = new SelectList(_roleManager.Roles.ToList(), "Name", "Name", roles.FirstOrDefault())
+            };
+            return View(vm);
+        }
+
+        // POST: AdminUsers/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, AdminUserEditViewModel model)
+        {
+            if (id != model.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(id.ToString());
+                if (user == null) return NotFound();
+
+                // Update basic info
+                user.Email = model.Email;
+                user.UserName = model.Email;
+                user.FullName = model.FullName;
+                await _userManager.UpdateAsync(user);
+
+                // Update role (prevent self-demotion)
+                var currentUser = await _userManager.GetUserAsync(User);
+                var currentRoles = await _userManager.GetRolesAsync(user);
+                if (currentUser != null && currentUser.Id == user.Id && model.SelectedRole != "Admin")
+                {
+                    TempData["Error"] = "You cannot change your own role.";
+                    model.RoleList = new SelectList(_roleManager.Roles.ToList(), "Name", "Name", model.SelectedRole);
+                    return View(model);
+                }
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!string.IsNullOrEmpty(model.SelectedRole))
+                {
+                    await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                }
+
+                // Reset password if provided
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            model.RoleList = new SelectList(_roleManager.Roles.ToList(), "Name", "Name", model.SelectedRole);
+            return View(model);
+        }
+
+        // GET: AdminUsers/Delete/5
+        public async Task<IActionResult> Delete(Guid? id)
+        {
+            if (id == null) return NotFound();
+            var user = await _userManager.FindByIdAsync(id.Value.ToString());
+            if (user == null) return NotFound();
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var vm = new AdminUserViewModel
+            {
+                Id = user.Id,
+                Email = user.Email ?? "",
+                FullName = user.FullName,
+                Roles = roles.ToList(),
+                IsLocked = user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow
+            };
+            return View(vm);
+        }
+
+        // POST: AdminUsers/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null && currentUser.Id == id)
+            {
+                TempData["Error"] = "You cannot delete your own account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
             }
             return RedirectToAction(nameof(Index));
         }
-        model.RoleList = new SelectList(_roleManager.Roles.ToList(), "Name", "Name", model.SelectedRole);
-        return View(model);
-    }
 
-    // POST: AdminUsers/Lock
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Lock(Guid id)
-    {
-        var user = await _userManager.FindByIdAsync(id.ToString());
-        if (user != null)
+        // POST: AdminUsers/Lock/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Lock(Guid id)
         {
-            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100));
-        }
-        return RedirectToAction(nameof(Index));
-    }
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null && currentUser.Id == id)
+            {
+                TempData["Error"] = "You cannot lock your own account.";
+                return RedirectToAction(nameof(Index));
+            }
 
-    // POST: AdminUsers/Unlock
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Unlock(Guid id)
-    {
-        var user = await _userManager.FindByIdAsync(id.ToString());
-        if (user != null)
-        {
-            await _userManager.SetLockoutEndDateAsync(user, null);
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user != null)
+            {
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100));
+            }
+            return RedirectToAction(nameof(Index));
         }
-        return RedirectToAction(nameof(Index));
+
+        // POST: AdminUsers/Unlock/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Unlock(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user != null)
+            {
+                await _userManager.SetLockoutEndDateAsync(user, null);
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
+
 ```
 
 ### 7.3 AdminRolesController (Role Management)
@@ -807,51 +988,206 @@ public class AdminUsersController : Controller
 Admin-only controller for CRUD on roles and assigning/removing roles from users.
 
 ```csharp
-[Authorize(Roles = "Admin")]
-public class AdminRolesController : Controller
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using VSMS.Web2.Data;
+using VSMS.Web2.Models;
+using VSMS.Web2.ViewModels;
+
+namespace VSMS.Web2.Controllers
 {
-    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    // GET: AdminRoles/Assign - shows user dropdown, role dropdown, and Assign button
-    public async Task<IActionResult> Assign()
+    [Authorize(Roles = "Admin")]
+    public class AdminRolesController : Controller
     {
-        var vm = new AssignRoleViewModel
-        {
-            Users = new SelectList(await _userManager.Users.ToListAsync(), "Id", "Email"),
-            Roles = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name"),
-            Assignments = await GetAllAssignments()
-        };
-        return View(vm);
-    }
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
 
-    // POST: AdminRoles/Assign
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Assign(AssignRoleViewModel model)
-    {
-        var user = await _userManager.FindByIdAsync(model.SelectedUserId.ToString());
-        if (user != null && !string.IsNullOrEmpty(model.SelectedRoleName))
+        public AdminRolesController(
+            RoleManager<IdentityRole<Guid>> roleManager,
+            UserManager<ApplicationUser> userManager,
+            AppDbContext context)
         {
-            if (!await _userManager.IsInRoleAsync(user, model.SelectedRoleName))
+            _roleManager = roleManager;
+            _userManager = userManager;
+            _context = context;
+        }
+
+        // GET: AdminRoles
+        public async Task<IActionResult> Index()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
+            var viewModels = new List<AdminRoleViewModel>();
+
+            foreach (var role in roles)
             {
-                await _userManager.AddToRoleAsync(user, model.SelectedRoleName);
+                var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
+                viewModels.Add(new AdminRoleViewModel
+                {
+                    Id = role.Id,
+                    Name = role.Name ?? "",
+                    UserCount = usersInRole.Count
+                });
             }
-        }
-        return RedirectToAction(nameof(Assign));
-    }
 
-    // POST: AdminRoles/RemoveAssignment
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RemoveAssignment(Guid userId, string roleName)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user != null)
-        {
-            await _userManager.RemoveFromRoleAsync(user, roleName);
+            return View(viewModels);
         }
-        return RedirectToAction(nameof(Assign));
+
+        // GET: AdminRoles/Create
+        public IActionResult Create() => View();
+
+        // POST: AdminRoles/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(string roleName)
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                ModelState.AddModelError("", "Role name is required.");
+                return View();
+            }
+
+            var result = await _roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View();
+        }
+
+        // GET: AdminRoles/Edit/5
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            if (id == null) return NotFound();
+            var role = await _roleManager.FindByIdAsync(id.Value.ToString());
+            if (role == null) return NotFound();
+            return View(role);
+        }
+
+        // POST: AdminRoles/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, string roleName)
+        {
+            var role = await _roleManager.FindByIdAsync(id.ToString());
+            if (role == null) return NotFound();
+
+            role.Name = roleName;
+            var result = await _roleManager.UpdateAsync(role);
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View(role);
+        }
+
+        // GET: AdminRoles/Delete/5
+        public async Task<IActionResult> Delete(Guid? id)
+        {
+            if (id == null) return NotFound();
+            var role = await _roleManager.FindByIdAsync(id.Value.ToString());
+            if (role == null) return NotFound();
+
+            var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
+            ViewData["UserCount"] = usersInRole.Count;
+            return View(role);
+        }
+
+        // POST: AdminRoles/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            var role = await _roleManager.FindByIdAsync(id.ToString());
+            if (role != null)
+            {
+                await _roleManager.DeleteAsync(role);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: AdminRoles/Assign
+        public async Task<IActionResult> Assign(int? pageNumber)
+        {
+            const int pageSize = 8;
+            int currentPage = pageNumber ?? 1;
+
+            var query = GetAssignmentsQuery();
+            int totalItems = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var pagedAssignments = await query
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["PageIndex"] = currentPage;
+            ViewData["TotalPages"] = totalPages;
+
+            var vm = new AssignRoleViewModel
+            {
+                Users = new SelectList(await _userManager.Users.ToListAsync(), "Id", "Email"),
+                Roles = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name"),
+                Assignments = pagedAssignments
+            };
+            return View(vm);
+        }
+
+        // POST: AdminRoles/Assign
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Assign(AssignRoleViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.SelectedUserId.ToString());
+            if (user != null && !string.IsNullOrEmpty(model.SelectedRoleName))
+            {
+                if (!await _userManager.IsInRoleAsync(user, model.SelectedRoleName))
+                {
+                    await _userManager.AddToRoleAsync(user, model.SelectedRoleName);
+                }
+            }
+
+            return RedirectToAction(nameof(Assign));
+        }
+
+        // POST: AdminRoles/RemoveAssignment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveAssignment(Guid userId, string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user != null)
+            {
+                await _userManager.RemoveFromRoleAsync(user, roleName);
+            }
+            return RedirectToAction(nameof(Assign));
+        }
+
+        // Returns IQueryable so pagination happens at SQL level
+        private IQueryable<UserRoleEntry> GetAssignmentsQuery()
+        {
+            return from ur in _context.UserRoles
+                   join u in _context.Users on ur.UserId equals u.Id
+                   join r in _context.Roles on ur.RoleId equals r.Id
+                   orderby u.Email, r.Name
+                   select new UserRoleEntry
+                   {
+                       UserId = u.Id,
+                       Email = u.Email ?? "",
+                       RoleName = r.Name ?? ""
+                   };
+        }
     }
 }
 ```
