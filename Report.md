@@ -39,7 +39,71 @@ VSMS (Volunteer Services Management System) is an ASP.NET Core MVC application t
 
 ---
 
-## 2. Program.cs Configuration
+## 2. Screenshots
+
+### 2.1 Home Page (Not Logged In)
+
+![Home Page](screenshots/01_home.png)
+
+### 2.2 Login Page
+
+![Login Page](screenshots/02_login.png)
+
+### 2.3 Register Page
+
+![Register Page](screenshots/03_register.png)
+
+### 2.4 Home Page (Logged In as Admin)
+
+![Home Logged In](screenshots/04_home_logged_in.png)
+
+### 2.5 Dashboard
+
+![Dashboard](screenshots/05_dashboard.png)
+
+### 2.6 Organizations List
+
+![Organizations](screenshots/06_organizations.png)
+
+### 2.7 Opportunities List
+
+![Opportunities](screenshots/07_opportunities.png)
+
+### 2.8 Volunteers List
+
+![Volunteers](screenshots/08_volunteers.png)
+
+### 2.9 Coordinators List
+
+![Coordinators](screenshots/09_coordinators.png)
+
+### 2.10 Applications List
+
+![Applications](screenshots/10_applications.png)
+
+### 2.11 Skills List
+
+![Skills](screenshots/11_skills.png)
+
+### 2.12 Admin - Manage Users
+
+![Manage Users](screenshots/12_admin_users.png)
+
+### 2.13 Admin - Create User
+
+![Create User](screenshots/13_admin_create_user.png)
+
+### 2.14 Admin - Manage Roles
+
+![Manage Roles](screenshots/14_admin_roles.png)
+
+### 2.15 Admin - Assign Roles
+
+![Assign Roles](screenshots/15_admin_assign_role.png)
+
+---
+
+## 3. Program.cs Configuration
 
 ```csharp
 using Microsoft.AspNetCore.Identity;
@@ -137,9 +201,9 @@ Key configurations:
 
 ---
 
-## 3. Models
+## 4. Models
 
-### 3.1 ApplicationUser
+### 4.1 ApplicationUser
 
 ```csharp
 public class ApplicationUser : IdentityUser<Guid>
@@ -153,7 +217,7 @@ public class ApplicationUser : IdentityUser<Guid>
 }
 ```
 
-### 3.2 Organization
+### 4.2 Organization
 
 ```csharp
 public class Organization
@@ -182,7 +246,7 @@ public class Organization
 }
 ```
 
-### 3.3 Opportunity
+### 4.3 Opportunity
 
 ```csharp
 public class Opportunity
@@ -217,7 +281,7 @@ public class Opportunity
 }
 ```
 
-### 3.4 Volunteer
+### 4.4 Volunteer
 
 ```csharp
 public class Volunteer
@@ -253,7 +317,7 @@ public class Volunteer
 }
 ```
 
-### 3.5 Coordinator
+### 4.5 Coordinator
 
 ```csharp
 public class Coordinator
@@ -293,7 +357,7 @@ public class Coordinator
 }
 ```
 
-### 3.6 Application (Main Domain Table with Audit Tracking)
+### 4.6 Application (Main Domain Table with Audit Tracking)
 
 ```csharp
 public class Application
@@ -331,7 +395,7 @@ public class Application
 }
 ```
 
-### 3.7 Skill
+### 4.7 Skill
 
 ```csharp
 public class Skill
@@ -354,7 +418,7 @@ public class Skill
 }
 ```
 
-### 3.8 Junction Tables
+### 4.8 Junction Tables
 
 ```csharp
 // VolunteerSkill (Composite PK)
@@ -382,7 +446,7 @@ public class OpportunitySkill
 
 ---
 
-## 4. AppDbContext
+## 5. AppDbContext
 
 ```csharp
 public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
@@ -417,9 +481,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
 ---
 
-## 5. ViewModels
+## 6. ViewModels
 
-### 5.1 LoginViewModel
+### 6.1 LoginViewModel
 
 ```csharp
 public class LoginViewModel
@@ -439,7 +503,7 @@ public class LoginViewModel
 }
 ```
 
-### 5.2 RegisterViewModel
+### 6.2 RegisterViewModel
 
 ```csharp
 public class RegisterViewModel
@@ -467,7 +531,7 @@ public class RegisterViewModel
 }
 ```
 
-### 5.3 AdminUserEditViewModel
+### 6.3 AdminUserEditViewModel
 
 ```csharp
 public class AdminUserEditViewModel
@@ -493,7 +557,7 @@ public class AdminUserEditViewModel
 }
 ```
 
-### 5.4 AssignRoleViewModel
+### 6.4 AssignRoleViewModel
 
 ```csharp
 public class AssignRoleViewModel
@@ -506,7 +570,7 @@ public class AssignRoleViewModel
 }
 ```
 
-### 5.5 DashboardViewModel
+### 6.5 DashboardViewModel
 
 ```csharp
 public class DashboardViewModel
@@ -526,9 +590,9 @@ public class DashboardViewModel
 
 ---
 
-## 6. Controllers
+## 7. Controllers
 
-### 6.1 AccountController (Authentication)
+### 7.1 AccountController (Authentication)
 
 Handles user registration, login, and logout using ASP.NET Core Identity.
 
@@ -611,7 +675,7 @@ public class AccountController : Controller
 }
 ```
 
-### 6.2 AdminUsersController (User Management)
+### 7.2 AdminUsersController (User Management)
 
 Admin-only controller for managing users. Supports CRUD + lock/unlock + password reset.
 
@@ -707,7 +771,7 @@ public class AdminUsersController : Controller
 }
 ```
 
-### 6.3 AdminRolesController (Role Management)
+### 7.3 AdminRolesController (Role Management)
 
 Admin-only controller for CRUD on roles and assigning/removing roles from users.
 
@@ -761,7 +825,7 @@ public class AdminRolesController : Controller
 }
 ```
 
-### 6.4 ApplicationsController (Audit Tracking)
+### 7.4 ApplicationsController (Audit Tracking)
 
 Manages volunteer applications with audit tracking fields.
 
@@ -805,7 +869,7 @@ public class ApplicationsController : Controller
 }
 ```
 
-### 6.5 Other Controllers
+### 7.5 Other Controllers
 
 | Controller | Auth | Description |
 |---|---|---|
@@ -818,9 +882,9 @@ public class ApplicationsController : Controller
 
 ---
 
-## 7. Views
+## 8. Views
 
-### 7.1 _Layout.cshtml (Role-Based Navigation)
+### 8.1 _Layout.cshtml (Role-Based Navigation)
 
 The navigation menu shows different items based on the user's role:
 - **Not logged in:** Home, Register, Login
@@ -852,7 +916,7 @@ The navigation menu shows different items based on the user's role:
 }
 ```
 
-### 7.2 _LoginPartial.cshtml
+### 8.2 _LoginPartial.cshtml
 
 Shows the user's name and Logout button when signed in, or Register/Login links otherwise.
 
@@ -887,7 +951,7 @@ else
 </ul>
 ```
 
-### 7.3 Login.cshtml
+### 8.3 Login.cshtml
 
 ```html
 @model LoginViewModel
@@ -927,7 +991,7 @@ else
 </div>
 ```
 
-### 7.4 Register.cshtml
+### 8.4 Register.cshtml
 
 ```html
 @model RegisterViewModel
@@ -964,7 +1028,7 @@ else
 </div>
 ```
 
-### 7.5 AdminUsers/Index.cshtml (User Management List)
+### 8.5 AdminUsers/Index.cshtml (User Management List)
 
 ```html
 @model List<AdminUserViewModel>
@@ -1011,7 +1075,7 @@ else
 </table>
 ```
 
-### 7.6 AdminUsers/Edit.cshtml (Edit User with Role Dropdown + Password Reset)
+### 8.6 AdminUsers/Edit.cshtml (Edit User with Role Dropdown + Password Reset)
 
 ```html
 @model AdminUserEditViewModel
@@ -1046,7 +1110,7 @@ else
 </div>
 ```
 
-### 7.7 AdminRoles/Assign.cshtml (Role Assignment with Dropdowns)
+### 8.7 AdminRoles/Assign.cshtml (Role Assignment with Dropdowns)
 
 ```html
 @model AssignRoleViewModel
@@ -1103,7 +1167,7 @@ else
 
 ---
 
-## 8. Role Seeder
+## 9. Role Seeder
 
 ```csharp
 public static class RoleSeeder
@@ -1144,68 +1208,4 @@ public static class RoleSeeder
     }
 }
 ```
-
----
-
-## 9. Screenshots
-
-### 9.1 Home Page (Not Logged In)
-
-![Home Page](screenshots/01_home.png)
-
-### 9.2 Login Page
-
-![Login Page](screenshots/02_login.png)
-
-### 9.3 Register Page
-
-![Register Page](screenshots/03_register.png)
-
-### 9.4 Home Page (Logged In as Admin)
-
-![Home Logged In](screenshots/04_home_logged_in.png)
-
-### 9.5 Dashboard
-
-![Dashboard](screenshots/05_dashboard.png)
-
-### 9.6 Organizations List
-
-![Organizations](screenshots/06_organizations.png)
-
-### 9.7 Opportunities List
-
-![Opportunities](screenshots/07_opportunities.png)
-
-### 9.8 Volunteers List
-
-![Volunteers](screenshots/08_volunteers.png)
-
-### 9.9 Coordinators List
-
-![Coordinators](screenshots/09_coordinators.png)
-
-### 9.10 Applications List
-
-![Applications](screenshots/10_applications.png)
-
-### 9.11 Skills List
-
-![Skills](screenshots/11_skills.png)
-
-### 9.12 Admin - Manage Users
-
-![Manage Users](screenshots/12_admin_users.png)
-
-### 9.13 Admin - Create User
-
-![Create User](screenshots/13_admin_create_user.png)
-
-### 9.14 Admin - Manage Roles
-
-![Manage Roles](screenshots/14_admin_roles.png)
-
-### 9.15 Admin - Assign Roles
-
-![Assign Roles](screenshots/15_admin_assign_role.png)
 
