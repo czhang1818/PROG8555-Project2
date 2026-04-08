@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSMS Architecture Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            flowchart: { useMaxWidth: false, padding: 8 },
+            sequence: { useMaxWidth: false },
+            er: { useMaxWidth: false },
+            gitGraph: { useMaxWidth: false },
+            themeVariables: {
+                primaryColor: '#f1f5f9',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#3b82f6',
+                lineColor: '#64748b',
+                secondaryColor: '#e2e8f0',
+                tertiaryColor: '#ffffff',
+                fontFamily: 'Inter, sans-serif'
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent-blue: #2563eb;
+            --accent-purple: #7c3aed;
+            --accent-green: #059669;
+            --accent-orange: #d97706;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Vibrant Mac/iOS Style Mesh Background */
+        .mesh-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.35), transparent 45%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.3), transparent 45%),
+                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.25), transparent 45%),
+                radial-gradient(circle at 0% 10%, rgba(245, 158, 11, 0.2), transparent 45%);
+            filter: blur(70px);
+            animation: meshFlow 25s infinite alternate ease-in-out;
+        }
+
+        @keyframes meshFlow {
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.1) translate(5%, 5%); }
+            100% { transform: scale(1) translate(-5%, -5%); }
+        }
+
+        /* Layout Container */
+        .container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        section {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 5%;
+            position: relative;
+        }
+
+        /* Typography */
+        .gradient-text {
+            background: linear-gradient(135deg, #0f172a 0%, #3730a3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 { font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 800; letter-spacing: -0.03em; text-align: center; line-height: 1.1; margin-bottom: 1.5rem; }
+        h2 { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; margin-bottom: 2rem; letter-spacing: -0.02em; }
+        h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-main); }
+        p { font-size: 1.125rem; color: var(--text-muted); line-height: 1.7; max-width: 650px; text-align: center; }
+
+        .tag {
+            font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
+            padding: 0.5rem 1rem; border-radius: 100px; margin-bottom: 1.5rem; display: inline-block;
+        }
+        
+        .tag-blue { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .tag-purple { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .tag-green { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .tag-orange { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Liquid Light Glass Panels */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.8);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* When glass-panel wraps a diagram, strip its own padding */
+        .glass-panel:has(.diagram-container) {
+            padding: 0.75rem;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 3rem;
+            max-width: 1400px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .text-left p { text-align: left; }
+        
+        ul.custom-list {
+            list-style: none; padding: 0; margin-top: 1.5rem;
+        }
+        ul.custom-list li {
+            margin-bottom: 1rem; position: relative; padding-left: 1.75rem; color: var(--text-muted); line-height: 1.6;
+            text-align: left;
+        }
+        ul.custom-list li::before {
+            content: '→'; position: absolute; left: 0; top: 0; color: var(--accent-blue); font-weight: bold;
+        }
+
+        /* Diagram Box */
+        .diagram-container {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            border: 1px solid rgba(255,255,255,0.7);
+            width: 100%;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .diagram-container:active { cursor: grabbing; }
+
+        .mermaid {
+            width: 100%;
+            display: block;
+            line-height: 0;
+        }
+        
+        /* We remove forced !important svg dimensions here so mermaid can generate its internal viewBox unharmed */
+
+        /* Animations */
+        .reveal.active {
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .reveal { opacity: 0; transform: translateY(40px); }
+
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+
+        /* Progress Bar Navigation */
+        .nav-progress {
+            position: fixed; left: 2.5rem; top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 1rem; z-index: 50;
+        }
+        .nav-dot {
+            width: 10px; height: 10px; border-radius: 50%; border: 2px solid rgba(15, 23, 42, 0.2);
+            transition: all 0.3s ease; cursor: pointer; position: relative;
+        }
+        .nav-dot::after {
+            content: attr(data-label); position: absolute; left: 24px; top: -4px; color: rgba(15, 23, 42, 0.6);
+            font-size: 0.85rem; font-weight: 600; white-space: nowrap; opacity: 0; transition: all 0.3s; transform: translateX(-10px);
+        }
+        .nav-dot.active { background: #0f172a; border-color: #0f172a; transform: scale(1.4); }
+        .nav-dot.active::after { opacity: 1; transform: translateX(0); color: #0f172a; }
+        .nav-dot:hover::after { opacity: 1; transform: translateX(0); }
+
+        /* Code block stylings */
+        .code-snippet {
+            background: #f1f5f9; padding: 1.25rem; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+            border: 1px solid rgba(15,23,42,0.08); color: #334155; margin-top: 1rem; overflow-x: auto; text-align: left;
+            line-height: 1.7; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            white-space: pre-wrap; word-break: break-word;
+        }
+        .keyword { color: #d97706; font-weight: 600; }
+        .string { color: #2563eb; }
+        .comment { color: #059669; font-style: italic; }
+        .class { color: #7c3aed; font-weight: 600; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="mesh-bg"></div>
+
+    <div class="nav-progress">
+        <div class="nav-dot active" data-label="1. Intro" onclick="document.getElementById('s1').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="2. Git Flow" onclick="document.getElementById('s2').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="3. BY" onclick="document.getElementById('s3').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="4. BY" onclick="document.getElementById('s4').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="5. CX" onclick="document.getElementById('s5').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="6. CX" onclick="document.getElementById('s6').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="7. MF" onclick="document.getElementById('s7').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="8. MF" onclick="document.getElementById('s8').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="9. BZ" onclick="document.getElementById('s9').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="10. BZ" onclick="document.getElementById('s10').scrollIntoView()"></div>
+        <div class="nav-dot" data-label="Q&A" onclick="document.getElementById('s11').scrollIntoView()"></div>
+    </div>
+
+    <div class="container" id="mainScroll">
+        
+        <!-- 1. Intro -->
+        <section id="s1">
+            <span class="tag tag-blue reveal">VSMS — Group Project 2</span>
+            <h1 class="gradient-text reveal delay-1">Volunteer Services<br>Management System</h1>
+            <p class="reveal delay-2">A multi-role MVC web application built with ASP.NET Core MVC, ASP.NET Core Identity, and Entity Framework Core SQLite.</p>
+
+            <div class="glass-panel text-left reveal delay-2" style="margin-top: 3rem; display: flex; gap: 3rem;">
+                <div style="border-left: 2px solid var(--accent-blue); padding-left: 1rem;">
+                    <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">Boyang</strong>
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Project Setup & Identity<br>Models · Services · DB Config</span>
+                </div>
+                <div style="border-left: 2px solid var(--accent-purple); padding-left: 1rem;">
+                    <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">Chunxi</strong>
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Business Logic CRUD<br>Controllers · Views · Audit</span>
+                </div>
+                <div style="border-left: 2px solid var(--accent-green); padding-left: 1rem;">
+                    <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">Marieth</strong>
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Admin Panel<br>User & Role Management</span>
+                </div>
+                <div style="border-left: 2px solid var(--accent-orange); padding-left: 1rem;">
+                    <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">BoZhang</strong>
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Dashboard & UI Theme<br>CSS · Home Page · Layout</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Team Strategy & Git -->
+        <section id="s2">
+            <div class="layout-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="text-left reveal">
+                    <span class="tag tag-blue">Project Foundation</span>
+                    <h2 class="gradient-text">Concurrent Git Flow Strategy</h2>
+                    <p>To prevent heavy file collisions and merge conflicts within a 4-person team, we implemented a strict sequential-fork branching logic.</p>
+                    <ul class="custom-list">
+                        <li><strong>M1 Foundation First:</strong> <code>base/boyang-foundation-identity-authentication</code> — All Models, Services, Identity, and DB schema merged before any feature work.</li>
+                        <li><strong>Sequential PR Merges:</strong> <code>feature/chunxi-business-crud</code> (PR#1) → <code>Feature/Marieth-Admin</code> → <code>feature/BoZhang-UI-Dashboard</code> (PR#4) — each branch built atop the previous merge.</li>
+                        <li><strong>Hotfix Branch:</strong> <code>Fix-accessDenied</code> (PR#5) — post-merge patch adding AccessDenied page.</li>
+                    </ul>
+                </div>
+                <div class="glass-panel reveal delay-1">
+                    <div class="diagram-container">
+                        <div class="mermaid">
+                            gitGraph
+                                commit id: "Initial commit"
+                                branch base/boyang-foundation
+                                checkout base/boyang-foundation
+                                commit id: "Project Init"
+                                commit id: "Models + Services + Identity"
+                                checkout main
+                                merge base/boyang-foundation id: "Foundation Ready"
+                                branch feature/chunxi-business-crud
+                                checkout feature/chunxi-business-crud
+                                commit id: "Org & Skill CRUD"
+                                commit id: "Coordinator & Opportunity"
+                                commit id: "Volunteer & Application"
+                                commit id: "Auto Assign Role"
+                                checkout main
+                                merge feature/chunxi-business-crud id: "PR #1 Merged"
+                                branch Feature/Marieth-Admin
+                                checkout Feature/Marieth-Admin
+                                commit id: "AdminRoles + AdminUsers"
+                                checkout main
+                                merge Feature/Marieth-Admin
+                                branch feature/BoZhang-UI-Dashboard
+                                checkout feature/BoZhang-UI-Dashboard
+                                commit id: "Dashboard + iOS CSS"
+                                checkout main
+                                merge feature/BoZhang-UI-Dashboard id: "PR #4 Merged"
+                                branch Fix-accessDenied
+                                checkout Fix-accessDenied
+                                commit id: "AccessDenied Page"
+                                checkout main
+                                merge Fix-accessDenied id: "PR #5 Merged"
+                                commit id: "Unit Tests + Report"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. M1 Architecture -->
+        <section id="s3">
+            <div class="layout-grid">
+                <div class="text-left reveal">
+                    <span class="tag tag-blue">Project Setup</span>
+                    <h2 class="gradient-text">Foundation & Architecture</h2>
+                    <p>Set up the project structure including domain models, service layer with interfaces, Identity authentication, and global security filters.</p>
+                    <ul class="custom-list">
+                        <li><strong>Global Anti-Forgery:</strong> Every POST is automatically validated via <code>AutoValidateAntiforgeryTokenAttribute</code> in <code>Program.cs</code>.</li>
+                        <li><strong>6 Scoped Services:</strong> Organization, Skill, Opportunity, Application, Coordinator, Volunteer — all injected via <code>AddScoped</code>.</li>
+                        <li><strong>Role Seeding:</strong> Admin, Coordinator, Volunteer roles auto-created at startup with a default admin account.</li>
+                    </ul>
+                    <div class="code-snippet">
+<span class="comment">// Program.cs — Global Anti-Forgery + DI Registration</span>
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(<span class="keyword">new</span> AutoValidateAntiforgeryTokenAttribute());
+});
+
+<span class="comment">// 6 Service Registrations</span>
+builder.Services.AddScoped&lt;IOrganizationService, OrganizationService&gt;();
+builder.Services.AddScoped&lt;ISkillService, SkillService&gt;();
+builder.Services.AddScoped&lt;IOpportunityService, OpportunityService&gt;();
+builder.Services.AddScoped&lt;IApplicationService, ApplicationService&gt;();
+builder.Services.AddScoped&lt;ICoordinatorService, CoordinatorService&gt;();
+builder.Services.AddScoped&lt;IVolunteerService, VolunteerService&gt;();
+                    </div>
+                </div>
+                <div class="glass-panel reveal delay-1">
+                    <div class="diagram-container">
+                        <div class="mermaid">
+                        graph TD
+                            classDef client fill:#f1f5f9,stroke:#3b82f6,stroke-width:2px,color:#0f172a
+                            classDef filter fill:#f8fafc,stroke:#8b5cf6,stroke-width:2px,color:#0f172a
+                            classDef mvc fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#0f172a
+                            classDef db fill:#f1f5f9,stroke:#10b981,stroke-width:2px,color:#0f172a
+
+                            C[Web Client POST] -->|Cookie + Token| AF[AutoValidateAntiforgeryToken]
+                            AF -->|Passes| Auth[UseAuthentication + UseAuthorization]
+                            Auth -->|Claims Principal| MVC[Controller Action]
+                            MVC -->|Constructor DI| Svc[IxxxxService Interface]
+                            Svc -->|EF LINQ Queries| EF[AppDbContext]
+                            EF <-->|Read / Write| DB[(SQLite vsms.db)]
+                            MVC <-->|User.Identity| ID[ASP.NET Core Identity]
+                            ID <-->|"IdentityRole(Guid)"| EF
+
+                            class C client
+                            class AF filter
+                            class Auth filter
+                            class MVC,Svc mvc
+                            class ID,EF,DB db
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. M1 Security Config -->
+        <section id="s4">
+            <div class="layout-grid" style="grid-template-columns: 1.5fr 1fr;">
+                <div class="glass-panel text-left reveal">
+                    <h3 style="margin-bottom: 1.5rem;">Program.cs — Identity + RoleSeeder</h3>
+                    <div class="code-snippet">
+<span class="comment">// Identity with custom ApplicationUser (Guid PK)</span>
+builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(options =>
+{
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 3;
+    options.Password.RequireDigit = <span class="keyword">true</span>;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = <span class="keyword">true</span>;
+    options.Password.RequireUppercase = <span class="keyword">true</span>;
+    options.User.RequireUniqueEmail = <span class="keyword">true</span>;
+})
+.AddEntityFrameworkStores&lt;AppDbContext&gt;()
+.AddDefaultTokenProviders();
+                    </div>
+                    <div class="code-snippet" style="margin-top:1rem;">
+<span class="comment">// RoleSeeder.cs — Auto-create roles + default admin</span>
+<span class="keyword">string</span>[] roles = { <span class="string">"Admin"</span>, <span class="string">"Coordinator"</span>, <span class="string">"Volunteer"</span> };
+<span class="keyword">foreach</span> (<span class="keyword">var</span> role <span class="keyword">in</span> roles)
+{
+    <span class="keyword">if</span> (!<span class="keyword">await</span> roleManager.RoleExistsAsync(role))
+        <span class="keyword">await</span> roleManager.CreateAsync(<span class="keyword">new</span> IdentityRole&lt;Guid&gt; { Name = role });
+}
+<span class="comment">// Seed admin@vsms.com with Admin role</span>
+<span class="keyword">var</span> result = <span class="keyword">await</span> userManager.CreateAsync(adminUser, <span class="string">"Admin@123"</span>);
+<span class="keyword">await</span> userManager.AddToRoleAsync(adminUser, <span class="string">"Admin"</span>);
+                    </div>
+                </div>
+                <div class="text-left reveal delay-1">
+                    <span class="tag tag-blue">Identity & Security</span>
+                    <h2 class="gradient-text">Identity Configuration</h2>
+                    <ul class="custom-list">
+                        <li><strong>ApplicationUser : IdentityUser&lt;Guid&gt;</strong> — Custom subclass with <code>FullName</code> and <code>CreatedAt</code> fields.</li>
+                        <li><strong>Lockout Policy:</strong> 3 failed attempts → 5 minute freeze, protecting against brute force attacks.</li>
+                        <li><strong>Cookie Paths:</strong> <code>LoginPath = /Account/Login</code>, <code>AccessDeniedPath = /Home/AccessDenied</code> configured in <code>ConfigureApplicationCookie</code>.</li>
+                        <li><strong>Auto Seed:</strong> 3 roles + admin account created on every app start via <code>RoleSeeder.SeedAsync()</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. M2 ERD + Authorization -->
+        <section id="s5">
+            <div class="layout-grid" style="grid-template-columns: 1.5fr 1fr;">
+                <div class="glass-panel reveal">
+                    <div class="diagram-container">
+                        <div class="mermaid">
+                        erDiagram
+                            ApplicationUser ||--o| Volunteer : "mapped 1:1"
+                            ApplicationUser ||--o| Coordinator : "mapped 1:1"
+                            Organization ||--|{ Coordinator : "employs"
+                            Organization ||--|{ Opportunity : "hosts"
+                            Volunteer ||--|{ Application : "submits"
+                            Opportunity ||--|{ Application : "receives"
+                            Skill ||--|{ VolunteerSkill : "has"
+                            Volunteer ||--|{ VolunteerSkill : "possesses"
+                            Opportunity ||--|{ OpportunitySkill : "requires"
+                            Skill ||--|{ OpportunitySkill : "defines"
+                        </div>
+                    </div>
+                </div>
+                <div class="text-left reveal delay-1">
+                    <span class="tag tag-purple">Authorization Design</span>
+                    <h2 class="gradient-text">Role-Based Access Control</h2>
+                    <p>ERD was covered in Part 1. In Part 2, we focused on how <code>ApplicationUser</code> connects to Identity roles and how each controller enforces access control.</p>
+                    <ul class="custom-list">
+                        <li><strong>Class-Level Auth:</strong> <code>[Authorize]</code> on the entire controller — all actions require login (e.g. Applications, Opportunities, Skills, Organizations).</li>
+                        <li><strong>Action-Level Override:</strong> Create/Edit/Delete actions use <code>[Authorize(Roles = "Admin, Coordinator")]</code> to restrict write operations.</li>
+                        <li><strong>Admin-Only:</strong> <code>Coordinators</code>, <code>Organizations</code> CUD locked to <code>[Authorize(Roles = "Admin")]</code>.</li>
+                        <li><strong>Auto Registration:</strong> <code>AccountController.Register</code> auto-assigns "Volunteer" role via <code>AddToRoleAsync</code> after user creation.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. M2 Audit & Service Pattern -->
+        <section id="s6">
+            <div class="layout-grid">
+                <div class="text-left reveal">
+                    <span class="tag tag-purple">Service Layer</span>
+                    <h2 class="gradient-text">Audit Tracking & Pagination</h2>
+                    <p>Each controller uses service interfaces via dependency injection. Audit fields track who created or modified each record.</p>
+                    <ul class="custom-list">
+                        <li><strong>Create Audit:</strong> <code>CreatedByUserId = User.Identity?.Name</code> stamps the creator on every new Application.</li>
+                        <li><strong>Edit Audit:</strong> <code>LastModifiedBy</code> + <code>LastModifiedAt</code> fields updated on every edit action.</li>
+                        <li><strong>DB-Level Pagination:</strong> <code>GetPaginatedApplicationsAsync(pageNumber, 10)</code> uses <code>Skip().Take()</code> at the EF query level.</li>
+                    </ul>
+                </div>
+                <div class="glass-panel reveal delay-1">
+                    <div class="code-snippet">
+<span class="comment">// ApplicationsController.cs — Real audit tracking code</span>
+[<span class="class">Authorize</span>(Roles = <span class="string">"Admin, Coordinator"</span>)]
+[<span class="class">HttpPost</span>]
+[<span class="class">ValidateAntiForgeryToken</span>]
+<span class="keyword">public async</span> Task&lt;IActionResult&gt; Create(Application application)
+{
+    <span class="keyword">if</span> (ModelState.IsValid)
+    {
+        application.CreatedByUserId = User.Identity?.Name;
+        <span class="keyword">await</span> _appService.AddApplicationAsync(application);
+        <span class="keyword">return</span> RedirectToAction(<span class="keyword">nameof</span>(Index));
+    }
+    <span class="comment">// repopulate dropdowns on validation failure...</span>
+}
+                    </div>
+                    <div class="code-snippet" style="margin-top:1rem;">
+<span class="comment">// Edit action — tracks modification</span>
+<span class="keyword">if</span> (ModelState.IsValid)
+{
+    application.LastModifiedBy = User.Identity?.Name;
+    application.LastModifiedAt = DateTime.UtcNow;
+    <span class="keyword">await</span> _appService.UpdateApplicationAsync(application);
+}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. M3 Admin User Management -->
+        <section id="s7">
+            <div class="layout-grid" style="grid-template-columns: 1fr 1.5fr;">
+                <div class="text-left reveal">
+                    <span class="tag tag-green">Admin Panel</span>
+                    <h2 class="gradient-text">Admin User Management</h2>
+                    <p>Added <code>AdminUsersController</code> and <code>AdminRolesController</code>, both restricted to the Admin role with <code>[Authorize(Roles = "Admin")]</code>.</p>
+                    <ul class="custom-list">
+                        <li><strong>User CRUD:</strong> Create users with password + role assignment, edit profile with role protection, and delete with safety checks.</li>
+                        <li><strong>Account Lock/Unlock:</strong> Admins can lock suspicious accounts using <code>SetLockoutEndDateAsync</code>, and unlock them later.</li>
+                        <li><strong>Self-Protection:</strong> Admin cannot lock, delete, or demote their own account.</li>
+                    </ul>
+                </div>
+                <div class="glass-panel reveal delay-1">
+                    <div class="code-snippet">
+<span class="comment">// AdminUsersController.cs — Self-protection on Delete</span>
+[<span class="class">HttpPost</span>, <span class="class">ActionName</span>(<span class="string">"Delete"</span>)]
+[<span class="class">ValidateAntiForgeryToken</span>]
+<span class="keyword">public async</span> Task&lt;IActionResult&gt; DeleteConfirmed(Guid id)
+{
+    <span class="keyword">var</span> currentUser = <span class="keyword">await</span> _userManager.GetUserAsync(User);
+    <span class="keyword">if</span> (currentUser != <span class="keyword">null</span> && currentUser.Id == id)
+    {
+        TempData[<span class="string">"Error"</span>] = <span class="string">"You cannot delete your own account."</span>;
+        <span class="keyword">return</span> RedirectToAction(<span class="keyword">nameof</span>(Index));
+    }
+    <span class="keyword">var</span> user = <span class="keyword">await</span> _userManager.FindByIdAsync(id.ToString());
+    <span class="keyword">if</span> (user != <span class="keyword">null</span>) <span class="keyword">await</span> _userManager.DeleteAsync(user);
+    <span class="keyword">return</span> RedirectToAction(<span class="keyword">nameof</span>(Index));
+}
+                    </div>
+                    <div class="code-snippet" style="margin-top:1rem;">
+<span class="comment">// Self-protection on Lock</span>
+<span class="keyword">public async</span> Task&lt;IActionResult&gt; Lock(Guid id)
+{
+    <span class="keyword">var</span> currentUser = <span class="keyword">await</span> _userManager.GetUserAsync(User);
+    <span class="keyword">if</span> (currentUser != <span class="keyword">null</span> && currentUser.Id == id)
+    {
+        TempData[<span class="string">"Error"</span>] = <span class="string">"You cannot lock your own account."</span>;
+        <span class="keyword">return</span> RedirectToAction(<span class="keyword">nameof</span>(Index));
+    }
+    <span class="keyword">await</span> _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100));
+}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. M3 Role Assignment -->
+        <section id="s8">
+            <div class="layout-grid" style="grid-template-columns: 1.5fr 1fr;">
+                <div class="glass-panel reveal">
+                    <div class="diagram-container">
+                        <div class="mermaid">
+                        sequenceDiagram
+                            autonumber
+                            actor Admin
+                            participant Ctrl as AdminRolesController
+                            participant UM as UserManager
+                            participant RM as RoleManager
+                            participant DB as AppDbContext
+                            
+                            Admin->>Ctrl: GET /AdminRoles/Assign
+                            Ctrl->>UM: Users.ToListAsync()
+                            Ctrl->>RM: Roles.ToListAsync()
+                            Ctrl->>DB: GetAssignmentsQuery() with Skip/Take
+                            Ctrl-->>Admin: Render AssignRoleViewModel
+                            
+                            Admin->>Ctrl: POST /Assign (UserId, RoleName)
+                            Ctrl->>UM: FindByIdAsync(SelectedUserId)
+                            Ctrl->>UM: IsInRoleAsync(user, role)
+                            alt Not in role
+                                Ctrl->>UM: AddToRoleAsync(user, role)
+                            end
+                            Ctrl-->>Admin: RedirectToAction(Assign)
+                        </div>
+                    </div>
+                </div>
+                <div class="text-left reveal delay-1">
+                    <span class="tag tag-green">Role Assignment Flow</span>
+                    <h2 class="gradient-text">AdminRolesController</h2>
+                    <p>Full CRUD on Identity Roles + role-user assignment with duplicate prevention and paginated display.</p>
+                    <ul class="custom-list">
+                        <li><strong>Assign GET:</strong> Builds <code>AssignRoleViewModel</code> with dual <code>SelectList</code> dropdowns + paginated user-role list from LINQ join.</li>
+                        <li><strong>Assign POST:</strong> Checks <code>IsInRoleAsync</code> before <code>AddToRoleAsync</code> to prevent duplicates.</li>
+                        <li><strong>RemoveAssignment:</strong> <code>RemoveFromRoleAsync</code> cleanly revokes a user's role.</li>
+                        <li><strong>SQL-Level Paging:</strong> <code>GetAssignmentsQuery()</code> uses LINQ join on UserRoles, Users, Roles tables with <code>Skip/Take</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. M4 Dashboard Feature -->
+        <section id="s9">
+            <div class="layout-grid" style="grid-template-columns: 1fr 1.5fr;">
+                <div class="text-left reveal">
+                    <span class="tag tag-orange">Dashboard</span>
+                    <h2 class="gradient-text">Dashboard Feature</h2>
+                    <p>Built the system dashboard with <code>DashboardController</code>, <code>DashboardViewModel</code>, and a Razor view showing live statistics and recent activities.</p>
+                    <ul class="custom-list">
+                        <li><strong>6 Entity Counters:</strong> Volunteers, Organizations, Opportunities, Applications, Skills, Coordinators — each with emoji icon + hover animation.</li>
+                        <li><strong>Status Breakdown:</strong> Pending / Approved / Rejected progress bars calculated from <code>TotalApplications</code>.</li>
+                        <li><strong>Recent Activities:</strong> Top 5 Opportunities by <code>EventDate</code> with Organization name.</li>
+                    </ul>
+                </div>
+                <div class="glass-panel reveal delay-1">
+                    <div class="code-snippet">
+<span class="comment">// DashboardController.cs — Full Index action</span>
+[<span class="class">Authorize</span>]
+<span class="keyword">public class</span> DashboardController : Controller
+{
+    <span class="keyword">private readonly</span> AppDbContext _context;
+
+    <span class="keyword">public async</span> Task&lt;IActionResult&gt; Index()
+    {
+        <span class="keyword">var</span> vm = <span class="keyword">new</span> DashboardViewModel
+        {
+            TotalVolunteers = <span class="keyword">await</span> _context.Volunteers.CountAsync(),
+            TotalOrganizations = <span class="keyword">await</span> _context.Organizations.CountAsync(),
+            TotalOpportunities = <span class="keyword">await</span> _context.Opportunities.CountAsync(),
+            TotalApplications = <span class="keyword">await</span> _context.Applications.CountAsync(),
+            TotalSkills = <span class="keyword">await</span> _context.Skills.CountAsync(),
+            TotalCoordinators = <span class="keyword">await</span> _context.Coordinators.CountAsync(),
+            PendingApplications = <span class="keyword">await</span> _context.Applications
+                .CountAsync(a => a.Status == <span class="string">"Pending"</span>),
+            ApprovedApplications = <span class="keyword">await</span> _context.Applications
+                .CountAsync(a => a.Status == <span class="string">"Approved"</span>),
+            RejectedApplications = <span class="keyword">await</span> _context.Applications
+                .CountAsync(a => a.Status == <span class="string">"Rejected"</span>),
+            RecentActivities = <span class="keyword">await</span> _context.Opportunities
+                .OrderByDescending(o => o.EventDate)
+                .Take(5)
+                .Select(o => <span class="keyword">new</span> RecentActivityItem
+                {
+                    Title = o.Title,
+                    Description = o.Organization != <span class="keyword">null</span>
+                        ? o.Organization.Name : <span class="string">"Unknown"</span>,
+                    Date = o.EventDate,
+                    Icon = <span class="string">"🎯"</span>
+                }).ToListAsync()
+        };
+        <span class="keyword">return</span> View(vm);
+    }
+}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. M4 CSS Theme & Layout -->
+        <section id="s10">
+            <div class="layout-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="glass-panel text-left reveal">
+                    <h3 style="color: var(--accent-orange)">Custom CSS Theme</h3>
+                    <p style="text-align:left; font-size:1rem; margin-top:0.5rem; color:var(--text-main);">Designed a custom iOS-inspired glassmorphism theme in <code>site.css</code>, replacing the default Bootstrap styling throughout the application.</p>
+                    <div class="code-snippet" style="margin-top:1rem;">
+<span class="comment">/* site.css — CSS Variables (Real source) */</span>
+:root {
+    --primary: <span class="string">#007aff</span>;
+    --accent: <span class="string">#5856d6</span>;
+    --success: <span class="string">#34c759</span>;
+    --warning: <span class="string">#ff9500</span>;
+    --danger: <span class="string">#ff3b30</span>;
+    --bg-card: <span class="string">rgba(255, 255, 255, 0.55)</span>;
+    --glass-blur: <span class="string">blur(24px) saturate(180%)</span>;
+    --glass-border: <span class="string">rgba(255, 255, 255, 0.45)</span>;
+    --radius: <span class="string">14px</span>;
+}
+                    </div>
+                    <div class="code-snippet" style="margin-top:0.8rem;">
+<span class="comment">/* Glassmorphism Card System */</span>
+<span class="class">.card</span> {
+    background: <span class="keyword">var</span>(--bg-card);
+    backdrop-filter: <span class="keyword">var</span>(--glass-blur);
+    border: 0.5px solid <span class="keyword">var</span>(--glass-border);
+    border-radius: <span class="keyword">var</span>(--radius);
+    box-shadow: <span class="keyword">var</span>(--shadow-sm), <span class="keyword">var</span>(--glass-inner);
+}
+<span class="class">.card:hover</span> {
+    transform: <span class="string">translateY(-2px)</span>;
+}
+                    </div>
+                </div>
+                <div class="text-left reveal delay-1">
+                    <span class="tag tag-orange">UI & Layout</span>
+                    <h2 class="gradient-text">Glassmorphism Theme</h2>
+                    <p>Redesigned the entire application UI including <code>Home/Index.cshtml</code> with a hero section, feature cards, and updated the shared <code>_Layout.cshtml</code>.</p>
+                    
+                    <h3 style="margin-top: 1.5rem; color: var(--text-main);">CSS Sections Covered:</h3>
+                    <ul class="custom-list">
+                        <li>🎨 <strong>CSS Variables:</strong> 20+ design tokens (colors, shadows, blur, radius)</li>
+                        <li>🧊 <strong>Glass Cards:</strong> <code>backdrop-filter: blur(24px) saturate(180%)</code></li>
+                        <li>📊 <strong>Stat Cards:</strong> 6 themed borders + hover scale animation</li>
+                        <li>📝 <strong>Forms:</strong> iOS-style inputs with focus glow ring</li>
+                        <li>📋 <strong>Tables:</strong> Striped with transparent glass rows</li>
+                        <li>🔘 <strong>Buttons:</strong> 8 outline variants + shadow elevation</li>
+                        <li>📖 <strong>Pagination:</strong> Glass pill buttons with active state</li>
+                        <li>🏠 <strong>Home Page:</strong> Hero section + 3 feature cards</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. Thank You & Q&A -->
+        <section id="s11">
+            <span class="tag tag-blue reveal">VSMS — Group Project 2</span>
+            <h1 class="gradient-text reveal delay-1" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">Thank You!</h1>
+            <p class="reveal delay-2" style="font-size: 1.25rem; margin-top: 1rem;">Questions & Answers</p>
+            <div class="glass-panel reveal delay-2" style="margin-top: 3rem; display: inline-flex; gap: 3rem; padding: 2rem 3rem;">
+                <div style="text-align: center;">
+                    <strong style="color:var(--text-main); display:block;">Boyang</strong>
+                    <span style="color:var(--accent-blue); font-size:0.85rem;">Setup & Identity</span>
+                </div>
+                <div style="text-align: center;">
+                    <strong style="color:var(--text-main); display:block;">Chunxi</strong>
+                    <span style="color:var(--accent-purple); font-size:0.85rem;">Business CRUD</span>
+                </div>
+                <div style="text-align: center;">
+                    <strong style="color:var(--text-main); display:block;">Marieth</strong>
+                    <span style="color:var(--accent-green); font-size:0.85rem;">Admin Panel</span>
+                </div>
+                <div style="text-align: center;">
+                    <strong style="color:var(--text-main); display:block;">BoZhang</strong>
+                    <span style="color:var(--accent-orange); font-size:0.85rem;">Dashboard & UI</span>
+                </div>
+            </div>
+        </section>
+        
+    </div>
+
+    <!-- Intersection Observer for scroll animations -->
+    <script>
+        const observerOptions = {
+            root: document.getElementById('mainScroll'),
+            threshold: 0.3
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // Update navigation dots
+                    const id = entry.target.closest('section').id;
+                    document.querySelectorAll('.nav-dot').forEach(dot => dot.classList.remove('active'));
+                    const index = parseInt(id.replace('s', '')) - 1;
+                    const dots = document.querySelectorAll('.nav-dot');
+                    if (dots[index]) dots[index].classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Wait for mermaid to render, then set up drag + zoom on each diagram
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.diagram-container').forEach((container) => {
+                    const svg = container.querySelector('svg');
+                    if (!svg) return;
+
+                    // Crop viewBox to actual content bounds
+                    const bbox = svg.getBBox();
+                    const pad = 15;
+                    let vb = {
+                        x: bbox.x - pad,
+                        y: bbox.y - pad,
+                        w: bbox.width + pad * 2,
+                        h: bbox.height + pad * 2
+                    };
+                    const applyViewBox = () => svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+                    applyViewBox();
+
+                    svg.removeAttribute('style');
+                    svg.setAttribute('width', '100%');
+                    svg.removeAttribute('height');
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+                    // --- Drag to pan ---
+                    let isDragging = false, startX, startY, startVb;
+                    container.addEventListener('mousedown', (e) => {
+                        isDragging = true;
+                        startX = e.clientX;
+                        startY = e.clientY;
+                        startVb = { ...vb };
+                        e.preventDefault();
+                    });
+                    window.addEventListener('mousemove', (e) => {
+                        if (!isDragging) return;
+                        const rect = svg.getBoundingClientRect();
+                        const scaleX = vb.w / rect.width;
+                        const scaleY = vb.h / rect.height;
+                        vb.x = startVb.x - (e.clientX - startX) * scaleX;
+                        vb.y = startVb.y - (e.clientY - startY) * scaleY;
+                        applyViewBox();
+                    });
+                    window.addEventListener('mouseup', () => { isDragging = false; });
+
+                    // --- Scroll to zoom ---
+                    container.addEventListener('wheel', (e) => {
+                        e.preventDefault();
+                        const zoomFactor = e.deltaY > 0 ? 1.12 : 0.88;
+                        const rect = svg.getBoundingClientRect();
+                        // Mouse position in viewBox coords
+                        const mx = vb.x + ((e.clientX - rect.left) / rect.width) * vb.w;
+                        const my = vb.y + ((e.clientY - rect.top) / rect.height) * vb.h;
+                        // Scale around mouse position
+                        vb.w *= zoomFactor;
+                        vb.h *= zoomFactor;
+                        vb.x = mx - ((e.clientX - rect.left) / rect.width) * vb.w;
+                        vb.y = my - ((e.clientY - rect.top) / rect.height) * vb.h;
+                        applyViewBox();
+                    }, { passive: false });
+                });
+            }, 800);
+        });
+    </script>
+</body>
+</html>
