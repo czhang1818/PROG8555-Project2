@@ -235,18 +235,18 @@
         
         <!-- 1. Intro -->
         <section id="s1">
-            <span class="tag tag-blue reveal">VSMS — Group Project 2</span>
+            <span class="tag tag-blue reveal">VSMS - Group Project 2</span>
             <h1 class="gradient-text reveal delay-1">Volunteer Services<br>Management System</h1>
             <p class="reveal delay-2">A multi-role MVC web application built with ASP.NET Core MVC, ASP.NET Core Identity, and Entity Framework Core SQLite.</p>
 
             <div class="glass-panel text-left reveal delay-2" style="margin-top: 3rem; display: flex; gap: 3rem;">
                 <div style="border-left: 2px solid var(--accent-blue); padding-left: 1rem;">
                     <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">Boyang</strong>
-                    <span style="color:var(--text-muted); font-size:0.85rem;">Project Setup & Identity<br>Models · Services · DB Config</span>
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Project Setup & Identity<br>Models | Services | DB Config</span>
                 </div>
                 <div style="border-left: 2px solid var(--accent-purple); padding-left: 1rem;">
                     <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">Chunxi</strong>
-                    <span style="color:var(--text-muted); font-size:0.85rem;">Business Logic CRUD<br>Controllers · Views · Audit</span>
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Business Logic CRUD<br>Controllers | Views | Audit</span>
                 </div>
                 <div style="border-left: 2px solid var(--accent-green); padding-left: 1rem;">
                     <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">Marieth</strong>
@@ -254,7 +254,7 @@
                 </div>
                 <div style="border-left: 2px solid var(--accent-orange); padding-left: 1rem;">
                     <strong style="color:var(--text-main); display:block; margin-bottom: 0.2rem;">BoZhang</strong>
-                    <span style="color:var(--text-muted); font-size:0.85rem;">Dashboard & UI Theme<br>CSS · Home Page · Layout</span>
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Dashboard & UI Theme<br>CSS | Home Page | Layout</span>
                 </div>
             </div>
         </section>
@@ -267,9 +267,9 @@
                     <h2 class="gradient-text">Concurrent Git Flow Strategy</h2>
                     <p>To prevent heavy file collisions and merge conflicts within a 4-person team, we implemented a strict sequential-fork branching logic.</p>
                     <ul class="custom-list">
-                        <li><strong>M1 Foundation First:</strong> <code>base/boyang-foundation-identity-authentication</code> — All Models, Services, Identity, and DB schema merged before any feature work.</li>
-                        <li><strong>Sequential PR Merges:</strong> <code>feature/chunxi-business-crud</code> (PR#1) → <code>Feature/Marieth-Admin</code> → <code>feature/BoZhang-UI-Dashboard</code> (PR#4) — each branch built atop the previous merge.</li>
-                        <li><strong>Hotfix Branch:</strong> <code>Fix-accessDenied</code> (PR#5) — post-merge patch adding AccessDenied page.</li>
+                        <li><strong>M1 Foundation First:</strong> <code>base/boyang-foundation-identity-authentication</code> - all Models, Services, Identity, and DB schema merged before any feature work.</li>
+                        <li><strong>Sequential PR Merges:</strong> <code>feature/chunxi-business-crud</code> (PR#1) > <code>Feature/Marieth-Admin</code> > <code>feature/BoZhang-UI-Dashboard</code> (PR#4) - each branch built atop the previous merge.</li>
+                        <li><strong>Hotfix Branch:</strong> <code>Fix-accessDenied</code> (PR#5) - post-merge patch adding AccessDenied page.</li>
                     </ul>
                 </div>
                 <div class="glass-panel reveal delay-1">
@@ -322,11 +322,11 @@
                     <p>Set up the project structure including domain models, service layer with interfaces, Identity authentication, and global security filters.</p>
                     <ul class="custom-list">
                         <li><strong>Global Anti-Forgery:</strong> Every POST is automatically validated via <code>AutoValidateAntiforgeryTokenAttribute</code> in <code>Program.cs</code>.</li>
-                        <li><strong>6 Scoped Services:</strong> Organization, Skill, Opportunity, Application, Coordinator, Volunteer — all injected via <code>AddScoped</code>.</li>
+                        <li><strong>6 Scoped Services:</strong> Organization, Skill, Opportunity, Application, Coordinator, Volunteer - all injected via <code>AddScoped</code>.</li>
                         <li><strong>Role Seeding:</strong> Admin, Coordinator, Volunteer roles auto-created at startup with a default admin account.</li>
                     </ul>
                     <div class="code-snippet">
-<span class="comment">// Program.cs — Global Anti-Forgery + DI Registration</span>
+<span class="comment">// Program.cs - Global Anti-Forgery + DI Registration</span>
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(<span class="keyword">new</span> AutoValidateAntiforgeryTokenAttribute());
@@ -374,7 +374,7 @@ builder.Services.AddScoped&lt;IVolunteerService, VolunteerService&gt;();
         <section id="s4">
             <div class="layout-grid" style="grid-template-columns: 1.5fr 1fr;">
                 <div class="glass-panel text-left reveal">
-                    <h3 style="margin-bottom: 1.5rem;">Program.cs — Identity + RoleSeeder</h3>
+                    <h3 style="margin-bottom: 1.5rem;">Program.cs - Identity + RoleSeeder</h3>
                     <div class="code-snippet">
 <span class="comment">// Identity with custom ApplicationUser (Guid PK)</span>
 builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(options =>
@@ -391,7 +391,7 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
 .AddDefaultTokenProviders();
                     </div>
                     <div class="code-snippet" style="margin-top:1rem;">
-<span class="comment">// RoleSeeder.cs — Auto-create roles + default admin</span>
+<span class="comment">// RoleSeeder.cs - Auto-create roles + default admin</span>
 <span class="keyword">string</span>[] roles = { <span class="string">"Admin"</span>, <span class="string">"Coordinator"</span>, <span class="string">"Volunteer"</span> };
 <span class="keyword">foreach</span> (<span class="keyword">var</span> role <span class="keyword">in</span> roles)
 {
@@ -407,8 +407,8 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
                     <span class="tag tag-blue">Identity & Security</span>
                     <h2 class="gradient-text">Identity Configuration</h2>
                     <ul class="custom-list">
-                        <li><strong>ApplicationUser : IdentityUser&lt;Guid&gt;</strong> — Custom subclass with <code>FullName</code> and <code>CreatedAt</code> fields.</li>
-                        <li><strong>Lockout Policy:</strong> 3 failed attempts → 5 minute freeze, protecting against brute force attacks.</li>
+                        <li><strong>ApplicationUser : IdentityUser&lt;Guid&gt;</strong> - Custom subclass with <code>FullName</code> and <code>CreatedAt</code> fields.</li>
+                        <li><strong>Lockout Policy:</strong> 3 failed attempts, 5 minute freeze, protecting against brute force attacks.</li>
                         <li><strong>Cookie Paths:</strong> <code>LoginPath = /Account/Login</code>, <code>AccessDeniedPath = /Home/AccessDenied</code> configured in <code>ConfigureApplicationCookie</code>.</li>
                         <li><strong>Auto Seed:</strong> 3 roles + admin account created on every app start via <code>RoleSeeder.SeedAsync()</code>.</li>
                     </ul>
@@ -441,7 +441,7 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
                     <h2 class="gradient-text">Role-Based Access Control</h2>
                     <p>ERD was covered in Part 1. In Part 2, we focused on how <code>ApplicationUser</code> connects to Identity roles and how each controller enforces access control.</p>
                     <ul class="custom-list">
-                        <li><strong>Class-Level Auth:</strong> <code>[Authorize]</code> on the entire controller — all actions require login (e.g. Applications, Opportunities, Skills, Organizations).</li>
+                        <li><strong>Class-Level Auth:</strong> <code>[Authorize]</code> on the entire controller - all actions require login (e.g. Applications, Opportunities, Skills, Organizations).</li>
                         <li><strong>Action-Level Override:</strong> Create/Edit/Delete actions use <code>[Authorize(Roles = "Admin, Coordinator")]</code> to restrict write operations.</li>
                         <li><strong>Admin-Only:</strong> <code>Coordinators</code>, <code>Organizations</code> CUD locked to <code>[Authorize(Roles = "Admin")]</code>.</li>
                         <li><strong>Auto Registration:</strong> <code>AccountController.Register</code> auto-assigns "Volunteer" role via <code>AddToRoleAsync</code> after user creation.</li>
@@ -465,7 +465,7 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
                 </div>
                 <div class="glass-panel reveal delay-1">
                     <div class="code-snippet">
-<span class="comment">// ApplicationsController.cs — Real audit tracking code</span>
+<span class="comment">// ApplicationsController.cs - Audit tracking code</span>
 [<span class="class">Authorize</span>(Roles = <span class="string">"Admin, Coordinator"</span>)]
 [<span class="class">HttpPost</span>]
 [<span class="class">ValidateAntiForgeryToken</span>]
@@ -481,7 +481,7 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
 }
                     </div>
                     <div class="code-snippet" style="margin-top:1rem;">
-<span class="comment">// Edit action — tracks modification</span>
+<span class="comment">// Edit action - tracks modification</span>
 <span class="keyword">if</span> (ModelState.IsValid)
 {
     application.LastModifiedBy = User.Identity?.Name;
@@ -508,7 +508,7 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
                 </div>
                 <div class="glass-panel reveal delay-1">
                     <div class="code-snippet">
-<span class="comment">// AdminUsersController.cs — Self-protection on Delete</span>
+<span class="comment">// AdminUsersController.cs - Self-protection on Delete</span>
 [<span class="class">HttpPost</span>, <span class="class">ActionName</span>(<span class="string">"Delete"</span>)]
 [<span class="class">ValidateAntiForgeryToken</span>]
 <span class="keyword">public async</span> Task&lt;IActionResult&gt; DeleteConfirmed(Guid id)
@@ -593,14 +593,14 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
                     <h2 class="gradient-text">Dashboard Feature</h2>
                     <p>Built the system dashboard with <code>DashboardController</code>, <code>DashboardViewModel</code>, and a Razor view showing live statistics and recent activities.</p>
                     <ul class="custom-list">
-                        <li><strong>6 Entity Counters:</strong> Volunteers, Organizations, Opportunities, Applications, Skills, Coordinators — each with emoji icon + hover animation.</li>
+                        <li><strong>6 Entity Counters:</strong> Volunteers, Organizations, Opportunities, Applications, Skills, Coordinators - each with icon and hover animation.</li>
                         <li><strong>Status Breakdown:</strong> Pending / Approved / Rejected progress bars calculated from <code>TotalApplications</code>.</li>
                         <li><strong>Recent Activities:</strong> Top 5 Opportunities by <code>EventDate</code> with Organization name.</li>
                     </ul>
                 </div>
                 <div class="glass-panel reveal delay-1">
                     <div class="code-snippet">
-<span class="comment">// DashboardController.cs — Full Index action</span>
+<span class="comment">// DashboardController.cs - Index action</span>
 [<span class="class">Authorize</span>]
 <span class="keyword">public class</span> DashboardController : Controller
 {
@@ -649,7 +649,7 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
                     <h3 style="color: var(--accent-orange)">Custom CSS Theme</h3>
                     <p style="text-align:left; font-size:1rem; margin-top:0.5rem; color:var(--text-main);">Designed a custom iOS-inspired glassmorphism theme in <code>site.css</code>, replacing the default Bootstrap styling throughout the application.</p>
                     <div class="code-snippet" style="margin-top:1rem;">
-<span class="comment">/* site.css — CSS Variables (Real source) */</span>
+<span class="comment">/* site.css - CSS Variables */</span>
 :root {
     --primary: <span class="string">#007aff</span>;
     --accent: <span class="string">#5856d6</span>;
@@ -683,14 +683,14 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
                     
                     <h3 style="margin-top: 1.5rem; color: var(--text-main);">CSS Sections Covered:</h3>
                     <ul class="custom-list">
-                        <li>🎨 <strong>CSS Variables:</strong> 20+ design tokens (colors, shadows, blur, radius)</li>
-                        <li>🧊 <strong>Glass Cards:</strong> <code>backdrop-filter: blur(24px) saturate(180%)</code></li>
-                        <li>📊 <strong>Stat Cards:</strong> 6 themed borders + hover scale animation</li>
-                        <li>📝 <strong>Forms:</strong> iOS-style inputs with focus glow ring</li>
-                        <li>📋 <strong>Tables:</strong> Striped with transparent glass rows</li>
-                        <li>🔘 <strong>Buttons:</strong> 8 outline variants + shadow elevation</li>
-                        <li>📖 <strong>Pagination:</strong> Glass pill buttons with active state</li>
-                        <li>🏠 <strong>Home Page:</strong> Hero section + 3 feature cards</li>
+                        <li><strong>CSS Variables:</strong> 20+ design tokens (colors, shadows, blur, radius)</li>
+                        <li><strong>Glass Cards:</strong> <code>backdrop-filter: blur(24px) saturate(180%)</code></li>
+                        <li><strong>Stat Cards:</strong> 6 themed borders + hover scale animation</li>
+                        <li><strong>Forms:</strong> iOS-style inputs with focus glow ring</li>
+                        <li><strong>Tables:</strong> Striped with transparent glass rows</li>
+                        <li><strong>Buttons:</strong> 8 outline variants + shadow elevation</li>
+                        <li><strong>Pagination:</strong> Glass pill buttons with active state</li>
+                        <li><strong>Home Page:</strong> Hero section + 3 feature cards</li>
                     </ul>
                 </div>
             </div>
@@ -698,7 +698,7 @@ builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&lt;Guid&gt;&gt;(op
 
         <!-- 11. Thank You & Q&A -->
         <section id="s11">
-            <span class="tag tag-blue reveal">VSMS — Group Project 2</span>
+            <span class="tag tag-blue reveal">VSMS - Group Project 2</span>
             <h1 class="gradient-text reveal delay-1" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">Thank You!</h1>
             <p class="reveal delay-2" style="font-size: 1.25rem; margin-top: 1rem;">Questions & Answers</p>
             <div class="glass-panel reveal delay-2" style="margin-top: 3rem; display: inline-flex; gap: 3rem; padding: 2rem 3rem;">
